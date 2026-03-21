@@ -78,6 +78,56 @@ La API está preparada para agregar filtros (calendario, tags, posesión del atl
    - Pantalla de lista de sesiones (título, fecha, duración, tags, badges).
    - Pantalla de detalle con warmup, bloques, notas del coach, ejercicios originales y items canónicos (en orden).
 
+## Despliegue en Linux / Raspberry Pi / VPS
+
+1. **Bases del entorno**  
+   ```bash
+   sudo apt update && sudo apt upgrade -y
+   sudo apt install -y python3 python3-venv python3-pip build-essential libpq-dev
+   sudo apt install -y nodejs npm
+   sudo apt install -y postgresql postgresql-contrib  # si hospedas la DB localmente
+   ```
+   En RPi usa el repositorio oficial de Node.js para ARM (`curl -fsSL https://deb.nodesource.com/setup_20.x | sudo -E bash -`).
+
+2. **Backend**
+   - Crea el virtualenv dentro de `backend/` y activa:
+     ```bash
+     cd backend
+     python3 -m venv .venv
+     source .venv/bin/activate
+     pip install -r requirements.txt
+     ```
+   - Crea `backend/.env` apuntando a tu PostgreSQL (local o remoto) y opcionalmente agrega `LOG_LEVEL=info`.
+   - Aplica migraciones: `alembic upgrade head`.
+   - Carga los JSON históricos:
+     ```bash
+     python importer_cli.py /ruta/al/workouts_octubre_2025.json \
+         /ruta/al/workouts_noviembre_2025.json \
+         /ruta/al/workouts_diciembre_2025.json
+     ```
+   - Habilita y arranca el servicio systemd usando el fichero de ejemplo `backend/deploy/uvicorn.service` (customiza las rutas):
+     ```bash
+     sudo cp backend/deploy/uvicorn.service /etc/systemd/system/coai-ch-backend.service
+     sudo systemctl daemon-reload
+     sudo systemctl enable --now coai-ch-backend.service
+     sudo journalctl -fu coai-ch-backend.service
+     ```
+
+3. **Frontend (opcional en el mismo host)**  
+   - Si quieres montar la app Expo en el mismo Linux/RPi, asegúrate de que el bundler pueda acceder al backend:
+     ```bash
+     cd frontend
+     npm install
+     # ajusta API_BASE a http://<IP_RPI>:8000
+     npm run start
+     ```
+   - Si el Pi no puede ejecutar Expo Go, considera hacer una build web con `npm run web` y servirla con nginx desde `/usr/share/nginx/html`.
+
+4. **Recomendaciones para VPS/RPi**
+   - Expón solo los puertos necesarios (`8000` para API si no hay proxy, `19000`/`19001`/`19006` para Expo) y protege el resto con `ufw`.
+   - Usa Nginx como reverse proxy para uvicorn + servir archivos estáticos del frontend.
+   - Para cargas altas considera usar un proxy como `gunicorn -k uvicorn.workers.UvicornWorker`.
+
 ## Tests
 
 Desde `backend/`:
