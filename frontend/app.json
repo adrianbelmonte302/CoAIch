@@ -1,0 +1,12 @@
+{
+  "expo": {
+    "name": "CoAIch Training Viewer",
+    "slug": "coai-ch-client",
+    "platforms": ["ios", "android", "web"],
+    "version": "1.0.0",
+    "sdkVersion": "49.0.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "automatic",
+    "assetBundlePatterns": ["**/*"]
+  }
+}

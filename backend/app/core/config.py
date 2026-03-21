@@ -1,0 +1,19 @@
+from functools import lru_cache
+from typing import Any
+
+from pydantic import BaseSettings, Field, PostgresDsn
+
+
+class Settings(BaseSettings):
+    PROJECT_NAME: str = "CoAIch Training Lab"
+    DATABASE_URL: PostgresDsn = Field(..., env="DATABASE_URL")
+    PARSER_VERSION: str = "1.0"
+
+    class Config:
+        env_file = ".env"
+        env_file_encoding = "utf-8"
+
+
+@lru_cache()
+def get_settings() -> Settings:
+    return Settings()
