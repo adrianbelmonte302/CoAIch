@@ -1,7 +1,8 @@
 from functools import lru_cache
 from typing import Any
 
-from pydantic import BaseSettings, Field, PostgresDsn
+from pydantic import Field, PostgresDsn
+from pydantic_settings import BaseSettings
 
 
 class Settings(BaseSettings):

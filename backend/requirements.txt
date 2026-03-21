@@ -2,7 +2,8 @@ fastapi
 uvicorn[standard]
 sqlalchemy>=2.0
 asyncpg
-pydantic
+pydantic>=2.0,<2.13
+pydantic-settings>=2.0
 alembic
 python-dotenv
 psycopg2-binary
