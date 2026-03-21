@@ -15,17 +15,20 @@ systemctl disable "${SERVICE}" || true
 systemctl stop nginx || true
 
 echo "[2/6] Eliminando proyecto y web-build"
-rmdir --ignore-fail-on-non-empty "${BASE_DIR}" 2>/dev/null || true
-rm -rf "${BASE_DIR}" || true
+cd / || true
+rm -rf "${BASE_DIR}"
 rm -rf /var/www/html/*
 
 echo "[3/6] Purga paquetes de sistema"
+apt-mark unhold nodejs npm || true
+apt update
+apt install -f || true
 apt remove --purge -y \
   nginx postgresql postgresql-contrib \
   nodejs npm \
   python3 python3-venv python3-pip build-essential libpq-dev \
-  git
-apt autoremove -y
+  git || true
+apt autoremove -y || true
 apt purge -y nodesource* || true
 rm -f /etc/apt/sources.list.d/nodesource.list
 
