@@ -8,8 +8,8 @@ class Settings(BaseSettings):
     PROJECT_NAME: str = "CoAIch Training Lab"
     DATABASE_URL: PostgresDsn = Field(..., env="DATABASE_URL")
     PARSER_VERSION: str = "1.0"
-    API_USERNAME: str = Field("adrian", env="API_USERNAME")
-    API_PASSWORD: str = Field("G7$k9#vQ8xh!2B", env="API_PASSWORD")
+    API_USERNAME: str = Field(..., env="API_USERNAME")
+    API_PASSWORD: str = Field(..., env="API_PASSWORD")
 
     class Config:
         env_file = ".env"

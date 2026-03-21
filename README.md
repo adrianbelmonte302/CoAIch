@@ -23,14 +23,14 @@ La arquitectura está pensada desde ya para futuras fases (analítica de carga, 
 
 ### 1. Backend
 
-1. Definir variables de entorno:
-   - Crea un archivo `backend/.env` con `DATABASE_URL=postgresql+psycopg2://user:pass@host:port/db`.
-   - Añade las credenciales básicas obligatorias:
+1. Definir variables de entorno (son obligatorias; FastAPI fallará si faltan):
+   - Crea un archivo `backend/.env` con tus valores reales. Ejemplo:
      ```bash
+     DATABASE_URL=postgresql+psycopg2://adrian:<clave-segura>@localhost:5432/coaih
      API_USERNAME=adrian
-     API_PASSWORD=G7$k9#vQ8xh!2B
+     API_PASSWORD=<clave-fuerte>
      ```
-     Cambia la contraseña por otra fuerte al desplegar en un VPS o producción.
+     Nunca subas este archivo a GitHub: `backend/.env` está ignorado en el repo.
 2. Instalar dependencias:
    ```bash
    cd backend
@@ -133,6 +133,8 @@ La API está preparada para agregar filtros (calendario, tags, posesión del atl
    - Expón solo los puertos necesarios (`8000` para API si no hay proxy, `19000`/`19001`/`19006` para Expo) y protege el resto con `ufw`.
    - Usa Nginx como reverse proxy para uvicorn + servir archivos estáticos del frontend.
    - Para cargas altas considera usar un proxy como `gunicorn -k uvicorn.workers.UvicornWorker`.
+
+Puedes automatizar la mayoría de los pasos anteriores ejecutando `sudo bash scripts/setup_vps.sh` (asegúrate de hacer `chmod +x scripts/setup_vps.sh` antes). El script asume que el proyecto vive en `/home/adrian/CoAIch`, instala dependencias, prepara PostgreSQL y escribe `.env` usando valores seguros que te pedirá en ejecución (usuario/pwd HTTP Basic y contraseña para el usuario Postgres). Revisa el contenido antes de ejecutarlo y no compartas las credenciales generadas.
 
 ## Tests
 
