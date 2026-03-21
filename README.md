@@ -62,6 +62,7 @@ pytest
    sudo scripts/prepare_setup.sh
    ```
    - El script corre `fix_dependencies.sh`, `install_node.sh` y `setup_vps.sh`, y confirma que `coai-ch-backend` y `nginx` estén activos.
+   - `setup_vps.sh` ahora solo instala `nodejs` (sin el paquete `npm`), evitando así el conflicto “nodejs: conflicts npm” que apt intenta resolver.
 2. **Despliegues posteriores**
    ```bash
    cd ~/CoAIch

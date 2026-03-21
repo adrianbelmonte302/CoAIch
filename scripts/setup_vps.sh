@@ -18,7 +18,7 @@ apt upgrade -y
 
 echo "[2/7] Instalando dependencias básicas"
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
-apt install -y python3 python3-venv python3-pip build-essential libpq-dev nodejs npm postgresql postgresql-contrib nginx git
+apt install -y python3 python3-venv python3-pip build-essential libpq-dev nodejs postgresql postgresql-contrib nginx git
 
 escape_sql() {
   printf "%s" "$1" | sed "s/'/''/g"
