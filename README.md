@@ -96,3 +96,4 @@ pytest
 - `.env` está en `.gitignore`; nunca lo subas.
 - La UI siempre muestra el raw text del coach. El canonical layer se usa para orden, filtros y futura analítica.
 - Puedes usar `npm config set prefix '~/.npm-global'` si quieres instalar herramientas Node sin `sudo`.
+- Si necesitas devolver el VPS al estado previo, ejecuta `sudo chmod +x scripts/uninstall_vps.sh && sudo scripts/uninstall_vps.sh`; detiene servicios, purga paquetes, borra `/home/adrian/CoAIch` y elimina `coaih`/`adrian` en PostgreSQL.
