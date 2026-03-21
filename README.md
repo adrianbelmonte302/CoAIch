@@ -55,16 +55,14 @@ pytest
 
 ## Despliegue en Linux / VPS / RPi
 
-1. **Limpia dependencias rotas e instala Node 20 desde NodeSource**
+1. **Limpia e instala Node 20, luego corre el setup completo con un solo script**
    ```bash
    cd ~/CoAIch
-   sudo chmod +x scripts/fix_dependencies.sh scripts/install_node.sh
-   sudo scripts/fix_dependencies.sh
-   sudo scripts/install_node.sh
+   sudo chmod +x scripts/prepare_setup.sh
+   sudo scripts/prepare_setup.sh
    ```
-   - `fix_dependencies.sh` libera held packages, purga nodejs/npm antiguos y reinstala desde NodeSource.
-   - `install_node.sh` puede ir ajustando prefijos de `npm` o `PATH` si expandes la configuración.
-2. **Setup inicial (como root)** – *asegúrate de haber ejecutado primero los scripts anteriores*
+   El script ejecuta `fix_dependencies.sh`, `install_node.sh` y `setup_vps.sh` en cadena y verifica `coai-ch-backend` + `nginx`.
+2. **Despliegue post-inicial**
    ```bash
    sudo chmod +x scripts/setup_vps.sh
    sudo scripts/setup_vps.sh
