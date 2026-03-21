@@ -19,6 +19,7 @@ Aplicación MVP para preservar entrenamientos históricos desde JSON y ofrecer u
    API_PASSWORD=<contraseña-http-basic>
    ```
    - Escapa caracteres especiales (ej. `G7%24k9%23vQ8xh%212B`) si usas `#`, `%`, `&`.
+   - El backend ahora convierte `PostgresDsn` a string antes de pasarlo a Alembic, así que el valor debe ser texto válido (si ves `TypeError: option values must be strings`, revisa que la línea no sea un objeto con metadatos).
 2. **Backend:**
    ```bash
    cd backend
