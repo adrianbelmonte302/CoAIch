@@ -55,17 +55,18 @@ pytest
 
 ## Despliegue en Linux / VPS / RPi
 
-1. **Limpia e instala Node 20, luego corre el setup completo con un solo script**
+1. **Preparar la máquina (una sola vez)**
    ```bash
    cd ~/CoAIch
    sudo chmod +x scripts/prepare_setup.sh
    sudo scripts/prepare_setup.sh
    ```
-   El script ejecuta `fix_dependencies.sh`, `install_node.sh` y `setup_vps.sh` en cadena y verifica `coai-ch-backend` + `nginx`.
-2. **Despliegue post-inicial**
+   - El script corre `fix_dependencies.sh`, `install_node.sh` y `setup_vps.sh`, y confirma que `coai-ch-backend` y `nginx` estén activos.
+2. **Despliegues posteriores**
    ```bash
-   sudo chmod +x scripts/setup_vps.sh
-   sudo scripts/setup_vps.sh
+   cd ~/CoAIch
+   chmod +x scripts/deploy_app.sh
+   ./scripts/deploy_app.sh
    ```
    Esto instala dependencias, crea `.env`, configura PostgreSQL y deja uvicorn/nginx listos.
 3. **Despliegues sucesivos**
