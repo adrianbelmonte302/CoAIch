@@ -53,7 +53,11 @@ Aplicación MVP para preservar entrenamientos históricos desde JSON y ofrecer u
 
 ## Despliegue en Linux / VPS / RPi
 
-1. Instala dependencias básicas (Python, Node, PostgreSQL y nginx).
+1. Instala dependencias básicas (Python, PostgreSQL y nginx) y Node.js usando `scripts/install_node.sh`:
+   ```bash
+   sudo chmod +x scripts/install_node.sh
+   sudo scripts/install_node.sh
+   ```
 2. Usa `scripts/setup_vps.sh` como root para automatizar instalación y configuración (te pedirá contraseñas seguras para PostgreSQL y HTTP Basic).
 3. Una vez desplegado, el script `scripts/deploy_app.sh` sirve para actualizar el VPS con la última versión: desde el usuario `adrian` ejecuta `./scripts/deploy_app.sh` (aclárale que debe ser ejecutable `chmod +x scripts/deploy_app.sh`).  
    - Hace `git reset --hard origin/main`, reinstala deps, aplica migraciones, reinicia el servicio systemd, rebuild del frontend (`npm run build`) y copia el resultado a `/var/www/html` si existe.
