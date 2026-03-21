@@ -55,7 +55,7 @@ pytest
 
 ## Despliegue en Linux / VPS / RPi
 
-1. **Repara paquetes y reinstala Node 20 desde NodeSource**
+1. **Limpia dependencias rotas e instala Node 20 desde NodeSource**
    ```bash
    cd ~/CoAIch
    sudo chmod +x scripts/fix_dependencies.sh scripts/install_node.sh
@@ -64,7 +64,7 @@ pytest
    ```
    - `fix_dependencies.sh` libera held packages, purga nodejs/npm antiguos y reinstala desde NodeSource.
    - `install_node.sh` puede ir ajustando prefijos de `npm` o `PATH` si expandes la configuración.
-2. **Setup inicial (como root)**
+2. **Setup inicial (como root)** – *asegúrate de haber ejecutado primero los scripts anteriores*
    ```bash
    sudo chmod +x scripts/setup_vps.sh
    sudo scripts/setup_vps.sh
