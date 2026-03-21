@@ -25,6 +25,12 @@ La arquitectura está pensada desde ya para futuras fases (analítica de carga, 
 
 1. Definir variables de entorno:
    - Crea un archivo `backend/.env` con `DATABASE_URL=postgresql+psycopg2://user:pass@host:port/db`.
+   - Añade las credenciales básicas obligatorias:
+     ```bash
+     API_USERNAME=adrian
+     API_PASSWORD=G7$k9#vQ8xh!2B
+     ```
+     Cambia la contraseña por otra fuerte al desplegar en un VPS o producción.
 2. Instalar dependencias:
    ```bash
    cd backend
