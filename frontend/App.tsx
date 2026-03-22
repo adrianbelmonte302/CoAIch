@@ -12,6 +12,7 @@ import {
 } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
 const WEB_FALLBACK_BASE =
   typeof window !== "undefined"
@@ -82,6 +83,7 @@ type SessionDetail = SessionSummary & {
 };
 
 const Stack = createNativeStackNavigator();
+const Tab = createBottomTabNavigator();
 const AuthContext = createContext({
   basicAuth: "",
   username: "",
@@ -366,6 +368,40 @@ function SessionListScreen({ navigation, route }: any) {
   );
 }
 
+
+function WorkoutsDbScreen() {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6", alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>WorkoutsDDBB</Text>
+      <Text style={{ marginTop: 8, color: "#555", textAlign: "center" }}>
+        Base de datos de WODs y sesiones recopiladas
+      </Text>
+    </SafeAreaView>
+  );
+}
+
+function AnalysisScreen() {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6", alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>An?lisis</Text>
+      <Text style={{ marginTop: 8, color: "#555", textAlign: "center" }}>
+        M?tricas y tendencias de entrenamiento
+      </Text>
+    </SafeAreaView>
+  );
+}
+
+function CoachScreen() {
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6", alignItems: "center", justifyContent: "center" }}>
+      <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>Coach</Text>
+      <Text style={{ marginTop: 8, color: "#555", textAlign: "center" }}>
+        Espacio para notas y planificaci?n del coach
+      </Text>
+    </SafeAreaView>
+  );
+}
+
 function SessionDetailScreen({ route }: any) {
   const { sessionId } = route.params;
   const [session, setSession] = useState<SessionDetail | null>(null);
@@ -471,6 +507,16 @@ function SessionDetailScreen({ route }: any) {
         </View>
       ))}
     </ScrollView>
+  );
+}
+
+
+function SessionsStack() {
+  return (
+    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#100" }, headerTintColor: "#fff" }}>
+      <Stack.Screen name="Sessions" component={SessionListScreen} />
+      <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesi?n" }} />
+    </Stack.Navigator>
   );
 }
 
@@ -615,10 +661,19 @@ export default function App() {
   return (
     <AuthContext.Provider value={{ basicAuth, username, logout: handleLogout }}>
       <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#100" }, headerTintColor: "#fff" }}>
-          <Stack.Screen name="Sessions" component={SessionListScreen} />
-          <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesión" }} />
-        </Stack.Navigator>
+        <Tab.Navigator
+          screenOptions={{
+            headerStyle: { backgroundColor: "#100" },
+            headerTintColor: "#fff",
+            tabBarStyle: { backgroundColor: "#fff" },
+            tabBarLabelStyle: { fontSize: 12 },
+          }}
+        >
+          <Tab.Screen name="Sessions" component={SessionsStack} />
+          <Tab.Screen name="WorkoutsDDBB" component={WorkoutsDbScreen} />
+          <Tab.Screen name="An?lisis" component={AnalysisScreen} />
+          <Tab.Screen name="Coach" component={CoachScreen} />
+        </Tab.Navigator>
       </NavigationContainer>
     </AuthContext.Provider>
   );
