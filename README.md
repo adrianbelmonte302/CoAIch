@@ -182,6 +182,19 @@ EXPO_PUBLIC_API_BASE=http://<IP-VPS>:8000 ./scripts/deploy_app.sh
 
 `deploy_app.sh` ejecuta `npx expo export:web` y publica `web-build/`.
 
+**Deploy separado (backend / web)**
+Backend:
+```
+chmod +x scripts/deploy_backend.sh
+./scripts/deploy_backend.sh
+```
+
+Web:
+```
+chmod +x scripts/deploy_web.sh
+EXPO_PUBLIC_API_BASE=http://<IP-VPS>:8000 ./scripts/deploy_web.sh
+```
+
 **Checklist de deploy VPS**
 1. Backend: servicio activo
 ```
@@ -234,6 +247,7 @@ Estado actual:
 - CLI admite `--overwrite`, `--only-new`, `--dry-run`, `--limit`.
 - Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
 - Frontend Expo: login, recordarme, auto logout y logout en header.
+- Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
 
 Tabla raw/canonical (resumen):
 - raw_imports: JSON original completo + metadatos.
