@@ -49,6 +49,7 @@ type SessionSummary = {
   is_rest_day?: boolean;
   deload_week?: boolean;
   data_status?: string;
+  weekday?: string;
 };
 
 type SessionDetail = SessionSummary & {
@@ -105,9 +106,51 @@ function Badge({ label }: { label: string }) {
   );
 }
 
+function getMonthKey(date?: string): string {
+  if (!date || date.length < 7) return "Fecha desconocida";
+  const [y, m] = date.split("-");
+  return `${y}-${m}`;
+}
+
+function formatMonthLabel(monthKey: string): string {
+  if (monthKey === "Fecha desconocida") return monthKey;
+  const [y, m] = monthKey.split("-");
+  const month = Number(m);
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+  return `${monthNames[month - 1] || "Mes"} ${y}`;
+}
+
+function formatDayLabel(session: SessionSummary): string {
+  if (!session.date) return "Fecha sin definir";
+  const parts: string[] = [];
+  if (session.weekday) parts.push(session.weekday);
+  parts.push(session.date);
+  return parts.join(" ");
+}
+
+type ListRow =
+  | { type: "month"; key: string; label: string }
+  | { type: "day"; key: string; label: string }
+  | { type: "session"; key: string; session: SessionSummary };
+
 function SessionListScreen({ navigation, route }: any) {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const [jumpDate, setJumpDate] = useState("");
+  const [filteredDate, setFilteredDate] = useState("");
   const { basicAuth, username, logout } = useContext(AuthContext);
 
   useEffect(() => {
@@ -152,43 +195,144 @@ function SessionListScreen({ navigation, route }: any) {
     );
   }
 
+  const effectiveSessions = filteredDate
+    ? sessions.filter((s) => s.date === filteredDate)
+    : sessions;
+
+  const rows: ListRow[] = [];
+  const seenDays = new Set<string>();
+  let currentMonth = \"\";
+  effectiveSessions.forEach((session) => {
+    const monthKey = getMonthKey(session.date);
+    if (monthKey !== currentMonth) {
+      currentMonth = monthKey;
+      rows.push({
+        type: \"month\",
+        key: `month-${monthKey}`,
+        label: formatMonthLabel(monthKey),
+      });
+    }
+    const dayKey = session.date || `unknown-${session.id}`;
+    if (!seenDays.has(dayKey)) {
+      seenDays.add(dayKey);
+      rows.push({
+        type: \"day\",
+        key: `day-${dayKey}`,
+        label: formatDayLabel(session),
+      });
+    }
+    rows.push({ type: \"session\", key: session.id, session });
+  });
+
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
-      <FlatList
-        data={sessions}
-        keyExtractor={(item) => item.id}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <TouchableOpacity
+    <SafeAreaView style={{ flex: 1, backgroundColor: \"#f6f6f6\" }}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
+        <Text style={{ fontSize: 14, color: \"#333\", marginBottom: 6 }}>
+          Saltar a fecha (YYYY-MM-DD)
+        </Text>
+        <View style={{ flexDirection: \"row\", marginBottom: 12 }}>
+          <TextInput
+            value={jumpDate}
+            onChangeText={setJumpDate}
+            placeholder=\"2025-12-31\"
             style={{
-              backgroundColor: "white",
-              padding: 16,
-              borderRadius: 12,
-              marginBottom: 12,
-              shadowColor: "#000",
-              shadowOpacity: 0.05,
-              shadowRadius: 8,
-              elevation: 3,
+              flex: 1,
+              borderWidth: 1,
+              borderColor: \"#ddd\",
+              borderRadius: 8,
+              paddingHorizontal: 10,
+              paddingVertical: 8,
+              backgroundColor: \"white\",
             }}
-            onPress={() => navigation.push("Detail", { sessionId: item.id })}
+          />
+          <TouchableOpacity
+            onPress={() => setFilteredDate(jumpDate.trim())}
+            style={{
+              marginLeft: 8,
+              backgroundColor: \"#111\",
+              paddingHorizontal: 12,
+              borderRadius: 8,
+              justifyContent: \"center\",
+            }}
           >
-            <Text style={{ fontSize: 18, fontWeight: "600" }}>{item.title || "Sin nombre"}</Text>
-            <Text style={{ color: "#666", marginTop: 4 }}>
-              {item.date || "Fecha sin definir"}
-            </Text>
-            <View style={{ flexDirection: "row", marginTop: 8 }}>
-              {item.is_rest_day && <Badge label="Rest" />}
-              {item.deload_week && <Badge label="Deload" />}
-              {item.data_status === "external_reference" && <Badge label="External" />}
-              {item.session_tags?.map((tag) => (
-                <Badge key={tag} label={tag} />
-              ))}
-            </View>
-            <Text style={{ marginTop: 8, color: "#333" }}>
-              Duración estimada: {item.estimated_duration_min ?? "—"} min
-            </Text>
+            <Text style={{ color: \"white\", fontWeight: \"600\" }}>Ir</Text>
           </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => {
+              setFilteredDate(\"\");
+              setJumpDate(\"\");
+            }}
+            style={{
+              marginLeft: 8,
+              backgroundColor: \"#eee\",
+              paddingHorizontal: 12,
+              borderRadius: 8,
+              justifyContent: \"center\",
+            }}
+          >
+            <Text style={{ color: \"#333\", fontWeight: \"600\" }}>Ver todo</Text>
+          </TouchableOpacity>
+        </View>
+        {filteredDate && (
+          <Text style={{ color: \"#666\", marginBottom: 8 }}>
+            Mostrando sesiones del {filteredDate}
+          </Text>
         )}
+      </View>
+      <FlatList
+        data={rows}
+        keyExtractor={(item) => item.key}
+        contentContainerStyle={{ padding: 16 }}
+        renderItem={({ item }) => {
+          if (item.type === \"month\") {
+            return (
+              <Text style={{ fontSize: 16, fontWeight: \"700\", marginBottom: 8 }}>
+                {item.label}
+              </Text>
+            );
+          }
+          if (item.type === \"day\") {
+            return (
+              <Text style={{ fontSize: 14, fontWeight: \"600\", marginBottom: 6, color: \"#444\" }}>
+                {item.label}
+              </Text>
+            );
+          }
+          const session = item.session;
+          const titleParts: string[] = [];
+          if (session.weekday) titleParts.push(session.weekday);
+          if (session.date) titleParts.push(session.date);
+          if (session.title) titleParts.push(session.title);
+          const displayTitle = titleParts.length ? titleParts.join(\" - \") : \"Sesion\";
+          return (
+            <TouchableOpacity
+              style={{
+                backgroundColor: \"white\",
+                padding: 16,
+                borderRadius: 12,
+                marginBottom: 12,
+                shadowColor: \"#000\",
+                shadowOpacity: 0.05,
+                shadowRadius: 8,
+                elevation: 3,
+              }}
+              onPress={() => navigation.push(\"Detail\", { sessionId: session.id })}
+            >
+              <Text style={{ fontSize: 18, fontWeight: \"600\" }}>{displayTitle}</Text>
+              <View style={{ flexDirection: \"row\", marginTop: 8, flexWrap: \"wrap\" }}>
+                {session.is_rest_day && <Badge label=\"Rest\" />}
+                {session.deload_week && <Badge label=\"Deload\" />}
+                {session.data_status === \"external_reference\" && <Badge label=\"External\" />}
+                {session.session_tags?.map((tag) => (
+                  <Badge key={tag} label={tag} />
+                ))}
+              </View>
+              <Text style={{ marginTop: 8, color: \"#333\" }}>
+                Duraci??n estimada: {session.estimated_duration_min ?? \"???\"} min
+              </Text>
+            </TouchableOpacity>
+          );
+        }}
       />
     </SafeAreaView>
   );
@@ -227,10 +371,15 @@ function SessionDetailScreen({ route }: any) {
     );
   }
 
+  const detailTitleParts: string[] = [];
+  if (session.weekday) detailTitleParts.push(session.weekday);
+  if (session.date) detailTitleParts.push(session.date);
+  if (session.title) detailTitleParts.push(session.title);
+  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Sesion";
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
-      <Text style={{ fontSize: 20, fontWeight: "700" }}>{session.title}</Text>
-      <Text style={{ color: "#666", marginTop: 4 }}>{session.date}</Text>
+      <Text style={{ fontSize: 20, fontWeight: "700" }}>{detailTitle}</Text>
       <View style={{ flexDirection: "row", marginTop: 8 }}>
         {(session.session_tags || []).map((tag) => (
           <Badge key={tag} label={tag} />
