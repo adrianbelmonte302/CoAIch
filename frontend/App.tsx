@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -101,8 +101,50 @@ function Badge({ label }: { label: string }) {
         marginRight: 4,
       }}
     >
-      <Text style={{ color: "white", fontSize: 12 }}>{label}</Text>
+      <Text style={{ color: "white", fontSize: 12, textAlign: "center" }}>{label}</Text>
     </View>
+  );
+}
+
+function DatePicker({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (next: string) => void;
+}) {
+  if (Platform.OS === "web") {
+    return React.createElement("input", {
+      type: "date",
+      value,
+      onChange: (event: any) => onChange(event.target.value),
+      style: {
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "#ddd",
+        borderRadius: 8,
+        padding: "8px 10px",
+        backgroundColor: "white",
+        fontSize: "14px",
+      },
+    });
+  }
+  return (
+    <TextInput
+      value={value}
+      onChangeText={onChange}
+      placeholder="2025-12-31"
+      style={{
+        flex: 1,
+        borderWidth: 1,
+        borderColor: "#ddd",
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        backgroundColor: "white",
+        textAlign: "center",
+      }}
+    />
   );
 }
 
@@ -190,7 +232,7 @@ function SessionListScreen({ navigation, route }: any) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />
-        <Text style={{ marginTop: 12 }}>Cargando sesiones...</Text>
+        <Text style={{ marginTop: 12, textAlign: "center" }}>Cargando sesiones...</Text>
       </View>
     );
   }
@@ -226,25 +268,12 @@ function SessionListScreen({ navigation, route }: any) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
-      <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
-        <Text style={{ fontSize: 14, color: "#333", marginBottom: 6 }}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, alignItems: "center" }}>
+        <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
           Saltar a fecha (YYYY-MM-DD)
         </Text>
         <View style={{ flexDirection: "row", marginBottom: 12 }}>
-          <TextInput
-            value={jumpDate}
-            onChangeText={setJumpDate}
-            placeholder="2025-12-31"
-            style={{
-              flex: 1,
-              borderWidth: 1,
-              borderColor: "#ddd",
-              borderRadius: 8,
-              paddingHorizontal: 10,
-              paddingVertical: 8,
-              backgroundColor: "white",
-            }}
-          />
+          <DatePicker value={jumpDate} onChange={setJumpDate} />
           <TouchableOpacity
             onPress={() => setFilteredDate(jumpDate.trim())}
             style={{
@@ -274,7 +303,7 @@ function SessionListScreen({ navigation, route }: any) {
           </TouchableOpacity>
         </View>
         {filteredDate && (
-          <Text style={{ color: "#666", marginBottom: 8 }}>
+          <Text style={{ color: "#666", marginBottom: 8, textAlign: "center" }}>
             Mostrando sesiones del {filteredDate}
           </Text>
         )}
@@ -286,24 +315,21 @@ function SessionListScreen({ navigation, route }: any) {
         renderItem={({ item }) => {
           if (item.type === "month") {
             return (
-              <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 8 }}>
+              <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 12, textAlign: "center" }}>
                 {item.label}
               </Text>
             );
           }
           if (item.type === "day") {
             return (
-              <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 6, color: "#444" }}>
+              <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 6, color: "#444", textAlign: "center" }}>
                 {item.label}
               </Text>
             );
           }
           const session = item.session;
-          const titleParts: string[] = [];
-          if (session.weekday) titleParts.push(session.weekday);
-          if (session.date) titleParts.push(session.date);
-          if (session.title) titleParts.push(session.title);
-          const displayTitle = titleParts.length ? titleParts.join(" - ") : "Sesi?n";
+          const displayTitle = session.title || "Programa del d?a";
+          const displaySubtitle = formatDayLabel(session);
           return (
             <TouchableOpacity
               style={{
@@ -315,11 +341,13 @@ function SessionListScreen({ navigation, route }: any) {
                 shadowOpacity: 0.05,
                 shadowRadius: 8,
                 elevation: 3,
+                alignItems: "center",
               }}
               onPress={() => navigation.push("Detail", { sessionId: session.id })}
             >
-              <Text style={{ fontSize: 18, fontWeight: "600" }}>{displayTitle}</Text>
-              <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap" }}>
+              <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>{displayTitle}</Text>
+              <Text style={{ color: "#666", marginTop: 4, textAlign: "center" }}>{displaySubtitle}</Text>
+              <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
                 {session.is_rest_day && <Badge label="Rest" />}
                 {session.deload_week && <Badge label="Deload" />}
                 {session.data_status === "external_reference" && <Badge label="External" />}
@@ -327,7 +355,7 @@ function SessionListScreen({ navigation, route }: any) {
                   <Badge key={tag} label={tag} />
                 ))}
               </View>
-              <Text style={{ marginTop: 8, color: "#333" }}>
+              <Text style={{ marginTop: 8, color: "#333", textAlign: "center" }}>
                 Duraci?n estimada: {session.estimated_duration_min ?? "?"} min
               </Text>
             </TouchableOpacity>
@@ -379,8 +407,8 @@ function SessionDetailScreen({ route }: any) {
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
-      <Text style={{ fontSize: 20, fontWeight: "700" }}>{detailTitle}</Text>
-      <View style={{ flexDirection: "row", marginTop: 8 }}>
+      <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{detailTitle}</Text>
+      <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center" }}>
         {(session.session_tags || []).map((tag) => (
           <Badge key={tag} label={tag} />
         ))}
@@ -388,13 +416,13 @@ function SessionDetailScreen({ route }: any) {
         {session.deload_week && <Badge label="Deload" />}
         {session.data_status === "external_reference" && <Badge label="Referencia externa" />}
       </View>
-      <Text style={{ marginTop: 8, fontWeight: "600" }}>
+      <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
         Duración estimada: {session.estimated_duration_min ?? "—"} min
       </Text>
 
       {session.warmup && (
         <View style={{ marginTop: 16 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600" }}>Warm-up</Text>
+          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
           <Text style={{ marginTop: 4 }}>{session.warmup.raw_text || session.warmup.mobility}</Text>
           {session.warmup.activation && <Text style={{ marginTop: 2 }}>{session.warmup.activation}</Text>}
         </View>
@@ -414,8 +442,8 @@ function SessionDetailScreen({ route }: any) {
             elevation: 2,
           }}
         >
-          <Text style={{ fontSize: 16, fontWeight: "600" }}>{block.title || "Bloque"}</Text>
-          <Text style={{ color: "#888", marginTop: 2 }}>{block.content_mode}</Text>
+          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>{block.title || "Bloque"}</Text>
+          <Text style={{ color: "#888", marginTop: 2, textAlign: "center" }}>{block.content_mode}</Text>
           {block.raw_text && (
             <Text style={{ marginTop: 8, color: "#222" }}>{block.raw_text}</Text>
           )}
