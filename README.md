@@ -192,6 +192,18 @@ cd ~/CoAIch
 sudo ./scripts/stop_app.sh
 ```
 
+**Chequeo completo del sistema (servicios + API + web)**
+```
+cd ~/CoAIch
+./scripts/check_system.sh
+```
+
+Con autenticacion:
+```
+cd ~/CoAIch
+API_CHECK_USER=<usuario> API_CHECK_PASS=<password> ./scripts/check_system.sh
+```
+
 **Desinstalacion completa (peligroso)**
 ```
 cd ~/CoAIch
@@ -273,6 +285,7 @@ Estado actual:
 - Script `make_executable.sh` para dejar todos los scripts con permisos de ejecucion en una sola orden.
 - Script `stop_app.sh` para apagar backend + nginx.
 - `uninstall_vps.sh` ahora detecta el repo desde su ubicacion y evita borrar rutas invalidas.
+- Script `check_system.sh` para revisar servicios, web root y endpoints basicos.
 - `prepare_setup.sh` ahora deja permisos de deploy configurados.
 
 Tabla raw/canonical (resumen):
