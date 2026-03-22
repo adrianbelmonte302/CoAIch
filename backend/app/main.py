@@ -31,4 +31,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-app.include_router(sessions.router, dependencies=[Depends(get_current_user)])
+# MVP: sesiones públicas para evitar prompt de login en web.
+# Mantendremos el auth para futuros endpoints admin (import, etc.).
+app.include_router(sessions.router)
