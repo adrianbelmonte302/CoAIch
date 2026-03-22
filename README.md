@@ -113,6 +113,26 @@ python importer_cli.py /ruta/workouts_octubre_2025.json \
   /ruta/workouts_diciembre_2025.json
 ```
 
+Reescribir duplicados (mismo contenido):
+```
+python importer_cli.py --overwrite /ruta/workouts_octubre_2025.json
+```
+
+Solo sesiones nuevas (ignora overwrite):
+```
+python importer_cli.py --only-new /ruta/workouts_octubre_2025.json
+```
+
+Dry-run (no escribe en DB):
+```
+python importer_cli.py --dry-run /ruta/workouts_octubre_2025.json
+```
+
+Limitar cantidad por archivo:
+```
+python importer_cli.py --limit 10 /ruta/workouts_octubre_2025.json
+```
+
 ---
 
 **Frontend local**

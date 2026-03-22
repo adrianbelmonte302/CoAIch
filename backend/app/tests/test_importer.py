@@ -137,3 +137,38 @@ def test_external_reference_flagged_and_raw_available(db: Session):
     assert block.has_external_reference
     assert "truecoach" in (block.raw_text or "").lower()
     assert session.data_status == "external_reference"
+
+
+def test_duplicate_sessions_are_skipped_by_default(db: Session):
+    importer = SessionImporter(db)
+    importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE)
+    importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE)
+    assert db.query(SessionModel).count() == 1
+
+
+def test_duplicate_sessions_overwrite_when_flag_enabled(db: Session):
+    importer = SessionImporter(db)
+    importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE)
+    importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE, overwrite=True)
+    assert db.query(SessionModel).count() == 1
+
+
+def test_duplicate_sessions_only_new_ignores_overwrite(db: Session):
+    importer = SessionImporter(db)
+    importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE)
+    importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE, overwrite=True, only_new=True)
+    assert db.query(SessionModel).count() == 1
+
+
+def test_dry_run_does_not_write(db: Session):
+    importer = SessionImporter(db)
+    result = importer.import_payload("oct.json", "octubre", OCTOBER_SAMPLE, dry_run=True)
+    assert result["sessions_imported"] == 1
+    assert db.query(SessionModel).count() == 0
+
+
+def test_limit_restricts_import_count(db: Session):
+    importer = SessionImporter(db)
+    payload = {"workouts": OCTOBER_SAMPLE["workouts"] * 2}
+    result = importer.import_payload("oct.json", "octubre", payload, limit=1)
+    assert result["sessions_imported"] == 1

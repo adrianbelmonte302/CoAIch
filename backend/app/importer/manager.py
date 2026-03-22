@@ -1,3 +1,4 @@
+import hashlib
 import json
 import logging
 from datetime import date
@@ -22,41 +23,99 @@ class SessionImporter:
         self.adapters = adapters or [OctoberAdapter(), NovDecAdapter()]
 
     def import_payload(
-        self, source_file: str, source_month: str, payload: Dict[str, Any]
+        self,
+        source_file: str,
+        source_month: str,
+        payload: Dict[str, Any],
+        overwrite: bool = False,
+        only_new: bool = False,
+        dry_run: bool = False,
+        limit: Optional[int] = None,
     ) -> Dict[str, Any]:
         sessions_data = self.extract_sessions(payload)
+        if limit is not None:
+            sessions_data = sessions_data[: max(0, limit)]
         adapter = self.choose_adapter(sessions_data)
-        raw_import = RawImport(
-            source_file=source_file,
-            source_month=source_month,
-            raw_json=payload,
-            parser_version=self.settings.PARSER_VERSION,
-        )
-        self.db.add(raw_import)
-        self.db.flush()
+        raw_import_id = None
+        if not dry_run:
+            raw_import = RawImport(
+                source_file=source_file,
+                source_month=source_month,
+                raw_json=payload,
+                parser_version=self.settings.PARSER_VERSION,
+            )
+            self.db.add(raw_import)
+            self.db.flush()
+            raw_import_id = raw_import.id
 
         warnings: List[str] = []
+        duplicates_in_file = 0
+        duplicates_in_db = 0
+        overwritten = 0
+        skipped_other = 0
         created = 0
+        seen_hashes: set[str] = set()
         for idx, session_payload in enumerate(sessions_data):
             try:
-                session_model = self.transform_session(session_payload, raw_import.id, adapter)
-                self.db.add(session_model)
+                source_hash = self.compute_session_hash(session_payload)
+                if source_hash in seen_hashes and not overwrite:
+                    warning = f"session idx={idx} skipped: duplicate in file"
+                    warnings.append(warning)
+                    logger.warning(warning)
+                    duplicates_in_file += 1
+                    continue
+
+                existing = (
+                    self.db.query(SessionModel)
+                    .filter(SessionModel.source_hash == source_hash)
+                    .first()
+                )
+                if existing and (only_new or not overwrite):
+                    warning = f"session idx={idx} skipped: duplicate in db"
+                    warnings.append(warning)
+                    logger.warning(warning)
+                    duplicates_in_db += 1
+                    continue
+                if existing and overwrite and not only_new:
+                    overwritten += 1
+                    if not dry_run:
+                        self.db.delete(existing)
+
+                if not dry_run:
+                    session_model = self.transform_session(
+                        session_payload, raw_import_id, adapter, source_hash=source_hash
+                    )
+                    self.db.add(session_model)
                 created += 1
+                seen_hashes.add(source_hash)
             except Exception as exc:  # noqa: BLE001
                 warning = f"session idx={idx} skipped: {exc}"
                 warnings.append(warning)
                 logger.warning(warning)
+                skipped_other += 1
 
-        self.db.commit()
+        if not dry_run:
+            self.db.commit()
         return {
-            "raw_import_id": str(raw_import.id),
+            "raw_import_id": str(raw_import_id) if raw_import_id else None,
             "sessions_imported": created,
+            "sessions_total": len(sessions_data),
+            "duplicates_in_file": duplicates_in_file,
+            "duplicates_in_db": duplicates_in_db,
+            "overwritten": overwritten,
+            "skipped_other": skipped_other,
             "warnings": warnings,
             "variant": adapter.name,
+            "dry_run": dry_run,
+            "limit": limit,
         }
 
     def transform_session(
-        self, data: Dict[str, Any], raw_import_id: Any, adapter: VariantAdapter
+        self,
+        data: Dict[str, Any],
+        raw_import_id: Any,
+        adapter: VariantAdapter,
+        source_hash: Optional[str] = None,
     ) -> SessionModel:
         session_date = self.safe_parse_date(data.get("date") or data.get("fecha"))
         tags = self.normalize_tags(data.get("tags") or data.get("session_tags"))
@@ -76,6 +135,7 @@ class SessionImporter:
             or data.get("duration"),
             session_tags=tags,
             source_ref_file=data.get("source_ref_file") or data.get("reference"),
+            source_hash=source_hash,
         )
 
         warmup_payload = data.get("warmup") or {}
@@ -139,3 +199,8 @@ class SessionImporter:
         if isinstance(value, str):
             return [tag.strip() for tag in value.split(",") if tag.strip()]
         return None
+
+    @staticmethod
+    def compute_session_hash(data: Dict[str, Any]) -> str:
+        raw = json.dumps(data, sort_keys=True, ensure_ascii=False, separators=(",", ":"))
+        return hashlib.sha256(raw.encode("utf-8")).hexdigest()

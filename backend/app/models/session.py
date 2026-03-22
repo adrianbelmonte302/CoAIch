@@ -30,6 +30,7 @@ class Session(Base):
     estimated_duration_min = Column(Integer, nullable=True)
     session_tags = Column(JSONB, nullable=True)
     source_ref_file = Column(String, nullable=True)
+    source_hash = Column(String, nullable=True)
 
     raw_import = relationship("RawImport", back_populates="sessions")
     warmup = relationship("Warmup", back_populates="session", uselist=False)
