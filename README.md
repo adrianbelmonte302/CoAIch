@@ -221,3 +221,42 @@ pytest
 - `.env` esta en `.gitignore`.
 - La UI siempre muestra `raw_text` cuando falta canonico.
 - La base esta preparada para futuras fases (carga, feedback, lesiones, nutricion).
+
+---
+
+**Contexto para Codex (handoff)**
+Objetivo: MVP tipo TrueCoach para consultar entrenamientos historicos desde JSON, con prioridad absoluta a no perder datos del coach. Arquitectura de doble capa: raw (JSON completo) y canonical (normalizado). UI debe mostrar todo lo disponible, usando canonical para estructura y raw como fallback.
+
+Estado actual:
+- Backend FastAPI + PostgreSQL + SQLAlchemy + Alembic.
+- Importador con variantes (octubre vs nov/dec) y deteccion automatica.
+- Deduplicacion por `source_hash` (hash del payload completo de la sesion).
+- CLI admite `--overwrite`, `--only-new`, `--dry-run`, `--limit`.
+- Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
+- Frontend Expo: login, recordarme, auto logout y logout en header.
+
+Tabla raw/canonical (resumen):
+- raw_imports: JSON original completo + metadatos.
+- sessions: metadatos de sesion + `source_hash`.
+- warmups, session_blocks, block_exercises_raw, block_items_canonical.
+
+Reglas clave de negocio:
+- Nunca inventar datos. Si no se infiere, guardar `null` y `raw_origin_text`.
+- Si hay referencia externa, marcar `has_external_reference` y `data_status`.
+- UI no trunca ni resume por defecto.
+
+Comandos criticos:
+- Importacion: `python importer_cli.py <paths> [--overwrite|--only-new|--dry-run|--limit N]`
+- Build web correcto: `EXPO_PUBLIC_API_BASE=http://<IP>:8000 npx expo export:web`
+
+Problemas previos resueltos:
+- Web apuntaba a `localhost:8000` por build viejo.
+- `npm run web` no genera build. Usar `expo export:web`.
+
+Proximos pasos sugeridos:
+1. Configurar Nginx para evitar cache en `index.html`.
+2. Endpoint admin para reimport seguro (con auth).
+3. UI mejorada con secciones y estado de autenticacion.
+
+**Regla de mantenimiento del contexto**
+Cada cambio importante (arquitectura, auth, importador, deploy o UX) debe actualizar esta seccion de README con el nuevo estado. Esto garantiza que Codex o cualquier nuevo colaborador pueda retomar el trabajo sin perder contexto.
