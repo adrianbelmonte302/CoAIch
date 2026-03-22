@@ -1,9 +1,15 @@
 import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const API_BASE = process.env.EXPO_PUBLIC_API_BASE || "http://localhost:8000";
+const WEB_FALLBACK_BASE =
+  typeof window !== "undefined"
+    ? `${window.location.protocol}//${window.location.hostname}:8000`
+    : "http://localhost:8000";
+const API_BASE =
+  process.env.EXPO_PUBLIC_API_BASE ||
+  (Platform.OS === "web" ? WEB_FALLBACK_BASE : "http://localhost:8000");
 const API_USER = process.env.EXPO_PUBLIC_API_USER || "";
 const API_PASS = process.env.EXPO_PUBLIC_API_PASS || "";
 const BASIC_AUTH =
