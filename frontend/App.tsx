@@ -201,13 +201,13 @@ function SessionListScreen({ navigation, route }: any) {
 
   const rows: ListRow[] = [];
   const seenDays = new Set<string>();
-  let currentMonth = \"\";
+  let currentMonth = "";
   effectiveSessions.forEach((session) => {
     const monthKey = getMonthKey(session.date);
     if (monthKey !== currentMonth) {
       currentMonth = monthKey;
       rows.push({
-        type: \"month\",
+        type: "month",
         key: `month-${monthKey}`,
         label: formatMonthLabel(monthKey),
       });
@@ -216,65 +216,65 @@ function SessionListScreen({ navigation, route }: any) {
     if (!seenDays.has(dayKey)) {
       seenDays.add(dayKey);
       rows.push({
-        type: \"day\",
+        type: "day",
         key: `day-${dayKey}`,
         label: formatDayLabel(session),
       });
     }
-    rows.push({ type: \"session\", key: session.id, session });
+    rows.push({ type: "session", key: session.id, session });
   });
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: \"#f6f6f6\" }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
       <View style={{ paddingHorizontal: 16, paddingTop: 12 }}>
-        <Text style={{ fontSize: 14, color: \"#333\", marginBottom: 6 }}>
+        <Text style={{ fontSize: 14, color: "#333", marginBottom: 6 }}>
           Saltar a fecha (YYYY-MM-DD)
         </Text>
-        <View style={{ flexDirection: \"row\", marginBottom: 12 }}>
+        <View style={{ flexDirection: "row", marginBottom: 12 }}>
           <TextInput
             value={jumpDate}
             onChangeText={setJumpDate}
-            placeholder=\"2025-12-31\"
+            placeholder="2025-12-31"
             style={{
               flex: 1,
               borderWidth: 1,
-              borderColor: \"#ddd\",
+              borderColor: "#ddd",
               borderRadius: 8,
               paddingHorizontal: 10,
               paddingVertical: 8,
-              backgroundColor: \"white\",
+              backgroundColor: "white",
             }}
           />
           <TouchableOpacity
             onPress={() => setFilteredDate(jumpDate.trim())}
             style={{
               marginLeft: 8,
-              backgroundColor: \"#111\",
+              backgroundColor: "#111",
               paddingHorizontal: 12,
               borderRadius: 8,
-              justifyContent: \"center\",
+              justifyContent: "center",
             }}
           >
-            <Text style={{ color: \"white\", fontWeight: \"600\" }}>Ir</Text>
+            <Text style={{ color: "white", fontWeight: "600" }}>Ir</Text>
           </TouchableOpacity>
           <TouchableOpacity
             onPress={() => {
-              setFilteredDate(\"\");
-              setJumpDate(\"\");
+              setFilteredDate("");
+              setJumpDate("");
             }}
             style={{
               marginLeft: 8,
-              backgroundColor: \"#eee\",
+              backgroundColor: "#eee",
               paddingHorizontal: 12,
               borderRadius: 8,
-              justifyContent: \"center\",
+              justifyContent: "center",
             }}
           >
-            <Text style={{ color: \"#333\", fontWeight: \"600\" }}>Ver todo</Text>
+            <Text style={{ color: "#333", fontWeight: "600" }}>Ver todo</Text>
           </TouchableOpacity>
         </View>
         {filteredDate && (
-          <Text style={{ color: \"#666\", marginBottom: 8 }}>
+          <Text style={{ color: "#666", marginBottom: 8 }}>
             Mostrando sesiones del {filteredDate}
           </Text>
         )}
@@ -284,16 +284,16 @@ function SessionListScreen({ navigation, route }: any) {
         keyExtractor={(item) => item.key}
         contentContainerStyle={{ padding: 16 }}
         renderItem={({ item }) => {
-          if (item.type === \"month\") {
+          if (item.type === "month") {
             return (
-              <Text style={{ fontSize: 16, fontWeight: \"700\", marginBottom: 8 }}>
+              <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 8 }}>
                 {item.label}
               </Text>
             );
           }
-          if (item.type === \"day\") {
+          if (item.type === "day") {
             return (
-              <Text style={{ fontSize: 14, fontWeight: \"600\", marginBottom: 6, color: \"#444\" }}>
+              <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 6, color: "#444" }}>
                 {item.label}
               </Text>
             );
@@ -303,32 +303,32 @@ function SessionListScreen({ navigation, route }: any) {
           if (session.weekday) titleParts.push(session.weekday);
           if (session.date) titleParts.push(session.date);
           if (session.title) titleParts.push(session.title);
-          const displayTitle = titleParts.length ? titleParts.join(\" - \") : \"Sesion\";
+          const displayTitle = titleParts.length ? titleParts.join(" - ") : "Sesi?n";
           return (
             <TouchableOpacity
               style={{
-                backgroundColor: \"white\",
+                backgroundColor: "white",
                 padding: 16,
                 borderRadius: 12,
                 marginBottom: 12,
-                shadowColor: \"#000\",
+                shadowColor: "#000",
                 shadowOpacity: 0.05,
                 shadowRadius: 8,
                 elevation: 3,
               }}
-              onPress={() => navigation.push(\"Detail\", { sessionId: session.id })}
+              onPress={() => navigation.push("Detail", { sessionId: session.id })}
             >
-              <Text style={{ fontSize: 18, fontWeight: \"600\" }}>{displayTitle}</Text>
-              <View style={{ flexDirection: \"row\", marginTop: 8, flexWrap: \"wrap\" }}>
-                {session.is_rest_day && <Badge label=\"Rest\" />}
-                {session.deload_week && <Badge label=\"Deload\" />}
-                {session.data_status === \"external_reference\" && <Badge label=\"External\" />}
+              <Text style={{ fontSize: 18, fontWeight: "600" }}>{displayTitle}</Text>
+              <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap" }}>
+                {session.is_rest_day && <Badge label="Rest" />}
+                {session.deload_week && <Badge label="Deload" />}
+                {session.data_status === "external_reference" && <Badge label="External" />}
                 {session.session_tags?.map((tag) => (
                   <Badge key={tag} label={tag} />
                 ))}
               </View>
-              <Text style={{ marginTop: 8, color: \"#333\" }}>
-                Duraci??n estimada: {session.estimated_duration_min ?? \"???\"} min
+              <Text style={{ marginTop: 8, color: "#333" }}>
+                Duraci?n estimada: {session.estimated_duration_min ?? "?"} min
               </Text>
             </TouchableOpacity>
           );
@@ -375,7 +375,7 @@ function SessionDetailScreen({ route }: any) {
   if (session.weekday) detailTitleParts.push(session.weekday);
   if (session.date) detailTitleParts.push(session.date);
   if (session.title) detailTitleParts.push(session.title);
-  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Sesion";
+  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Sesi?n";
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
