@@ -72,10 +72,15 @@ function SessionListScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/sessions`, {
+    fetch(`${API_BASE}/sessions/`, {
       headers: BASIC_AUTH ? { Authorization: BASIC_AUTH } : undefined,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => setSessions(data))
       .finally(() => setLoading(false));
   }, []);
@@ -140,7 +145,12 @@ function SessionDetailScreen({ route }: any) {
     fetch(`${API_BASE}/sessions/${sessionId}`, {
       headers: BASIC_AUTH ? { Authorization: BASIC_AUTH } : undefined,
     })
-      .then((res) => res.json())
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
+        }
+        return res.json();
+      })
       .then((data) => setSession(data))
       .finally(() => setLoading(false));
   }, [sessionId]);
