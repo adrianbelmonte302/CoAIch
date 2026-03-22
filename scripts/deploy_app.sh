@@ -30,7 +30,8 @@ sudo journalctl -u "${SERVICE}" --no-pager -n 20
 echo "[5/5] (Opcional) rebuild frontend web"
 cd "${PROJECT_DIR}/frontend"
 npm install
-npm run web
+WEB_API_BASE="${EXPO_PUBLIC_API_BASE:-${API_BASE:-http://127.0.0.1:8000}}"
+EXPO_PUBLIC_API_BASE="${WEB_API_BASE}" npx expo export:web
 sudo rm -rf /var/www/html/*
 sudo cp -r web-build/* /var/www/html/ 2>/dev/null || true
 
