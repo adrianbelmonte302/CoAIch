@@ -33,7 +33,7 @@ apt purge -y nodesource* || true
 rm -f /etc/apt/sources.list.d/nodesource.list
 
 echo "[4/6] Quitando PostgreSQL user/db"
-sudo -u postgres psql -c "DROP DATABASE IF EXISTS coaih;" || true
+sudo -u postgres psql -c "DROP DATABASE IF EXISTS coaich;" || true
 sudo -u postgres psql -c "DROP USER IF EXISTS adrian;" || true
 
 echo "[5/6] Limpiando repositorios y cache"

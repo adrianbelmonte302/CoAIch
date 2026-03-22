@@ -14,7 +14,7 @@ Aplicación MVP para preservar entrenamientos históricos desde JSON y ofrecer u
 
 1. **Variables críticas:** crea `backend/.env` (no lo subas a GitHub).
    ```bash
-   DATABASE_URL=postgresql+psycopg2://adrian:<contraseña-postgres>@localhost:5432/coaih
+DATABASE_URL=postgresql+psycopg2://adrian:<contraseña-postgres>@localhost:5432/coaich
    API_USERNAME=adrian
    API_PASSWORD=<contraseña-http-basic>
    ```
@@ -98,4 +98,4 @@ pytest
 - `.env` está en `.gitignore`; nunca lo subas.
 - La UI siempre muestra el raw text del coach. El canonical layer se usa para orden, filtros y futura analítica.
 - Puedes usar `npm config set prefix '~/.npm-global'` si quieres instalar herramientas Node sin `sudo`.
-- Si necesitas devolver el VPS al estado previo, ejecuta `sudo chmod +x scripts/uninstall_vps.sh && sudo scripts/uninstall_vps.sh`; detiene servicios, purga paquetes, borra `/home/adrian/CoAIch` y elimina `coaih`/`adrian` en PostgreSQL.
+- Si necesitas devolver el VPS al estado previo, ejecuta `sudo chmod +x scripts/uninstall_vps.sh && sudo scripts/uninstall_vps.sh`; detiene servicios, purga paquetes, borra `/home/adrian/CoAIch` y elimina `coaich`/`adrian` en PostgreSQL.

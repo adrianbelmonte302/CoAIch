@@ -31,9 +31,17 @@ if [[ -z "$DB_PASSWORD" ]]; then
   echo
 fi
 DB_PASSWORD_ESCAPED=$(escape_sql "$DB_PASSWORD")
-sudo -u postgres psql -c "CREATE DATABASE coaih;" >/dev/null 2>&1 || true
+
+# Migrate legacy DB name "coaih" to "coaich" if present.
+LEGACY_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='coaih';" || true)
+TARGET_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='coaich';" || true)
+if [[ "$LEGACY_EXISTS" == "1" && "$TARGET_EXISTS" != "1" ]]; then
+  sudo -u postgres psql -c "ALTER DATABASE coaih RENAME TO coaich;" >/dev/null 2>&1 || true
+fi
+
+sudo -u postgres psql -c "CREATE DATABASE coaich;" >/dev/null 2>&1 || true
 sudo -u postgres psql -c "CREATE USER adrian WITH PASSWORD '${DB_PASSWORD_ESCAPED}';" >/dev/null 2>&1 || true
-sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE coaih TO adrian;" >/dev/null 2>&1 || true
+sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE coaich TO adrian;" >/dev/null 2>&1 || true
 
 echo "[4/7] Configurando backend"
 if [[ ! -d "${PROJECT_HOME}" ]]; then
@@ -49,7 +57,7 @@ source .venv/bin/activate
 pip install -r requirements.txt
 
 API_USERNAME="${API_USERNAME:-adrian}"
-DATABASE_URL="postgresql+psycopg2://adrian:${DB_PASSWORD}@localhost:5432/coaih"
+DATABASE_URL="postgresql+psycopg2://adrian:${DB_PASSWORD}@localhost:5432/coaich"
 cat <<EOF > .env
 DATABASE_URL=${DATABASE_URL}
 API_USERNAME=${API_USERNAME}
