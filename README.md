@@ -186,6 +186,18 @@ chmod +x scripts/deploy_app.sh
 EXPO_PUBLIC_API_BASE=http://<IP-VPS>:8000 ./scripts/deploy_app.sh
 ```
 
+**Apagar la app (backend + nginx)**
+```
+cd ~/CoAIch
+sudo ./scripts/stop_app.sh
+```
+
+**Desinstalacion completa (peligroso)**
+```
+cd ~/CoAIch
+sudo ./scripts/uninstall_vps.sh
+```
+
 `deploy_app.sh` ejecuta `npx expo export:web` y publica `web-build/`.
 
 **Deploy separado (backend / web)**
@@ -259,6 +271,8 @@ Estado actual:
 - Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
 - Deploy scripts aseguran dependencias web antes de `export:web` para evitar fallos en VPS.
 - Script `make_executable.sh` para dejar todos los scripts con permisos de ejecucion en una sola orden.
+- Script `stop_app.sh` para apagar backend + nginx.
+- `uninstall_vps.sh` ahora detecta el repo desde su ubicacion y evita borrar rutas invalidas.
 - `prepare_setup.sh` ahora deja permisos de deploy configurados.
 
 Tabla raw/canonical (resumen):

@@ -10,6 +10,8 @@ chmod +x "${SCRIPT_DIR}/prepare_setup.sh" || true
 chmod +x "${SCRIPT_DIR}/setup_vps.sh" || true
 chmod +x "${SCRIPT_DIR}/fix_dependencies.sh" || true
 chmod +x "${SCRIPT_DIR}/install_node.sh" || true
+chmod +x "${SCRIPT_DIR}/stop_app.sh" || true
+chmod +x "${SCRIPT_DIR}/uninstall_vps.sh" || true
 chmod +x "${SCRIPT_DIR}/make_executable.sh" || true
 
 echo "Permisos de ejecucion aplicados en scripts/"

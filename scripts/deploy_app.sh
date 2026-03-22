@@ -12,6 +12,9 @@ if [[ "$EUID" -eq 0 ]]; then
 fi
 
 cd "${PROJECT_DIR}"
+if [[ -x "${SCRIPT_DIR}/make_executable.sh" ]]; then
+  "${SCRIPT_DIR}/make_executable.sh" || true
+fi
 if [[ ! -f "${BACKEND_DIR}/requirements.txt" ]]; then
   echo "No se encontro requirements.txt en ${BACKEND_DIR}. Revisa la ruta del repo."
   exit 1

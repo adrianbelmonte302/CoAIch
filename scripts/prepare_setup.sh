@@ -26,3 +26,5 @@ chmod +x "${SCRIPT_DIR}/deploy_app.sh" || true
 chmod +x "${SCRIPT_DIR}/deploy_backend.sh" || true
 chmod +x "${SCRIPT_DIR}/deploy_web.sh" || true
 chmod +x "${SCRIPT_DIR}/make_executable.sh" || true
+chmod +x "${SCRIPT_DIR}/stop_app.sh" || true
+chmod +x "${SCRIPT_DIR}/uninstall_vps.sh" || true

@@ -6,7 +6,8 @@ if [[ "$EUID" -ne 0 ]]; then
   exit 1
 fi
 
-BASE_DIR="/home/adrian/CoAIch"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+BASE_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 SERVICE="coai-ch-backend"
 
 echo "[1/6] Parando servicios"
@@ -16,6 +17,10 @@ systemctl stop nginx || true
 
 echo "[2/6] Eliminando proyecto y web-build"
 cd / || true
+if [[ -z "${BASE_DIR}" || "${BASE_DIR}" == "/" ]]; then
+  echo "Ruta BASE_DIR invalida: '${BASE_DIR}'. Abortando por seguridad."
+  exit 1
+fi
 rm -rf "${BASE_DIR}"
 rm -rf /var/www/html/*
 
