@@ -48,21 +48,14 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 
-API_USERNAME="${API_USERNAME:-}"
-if [[ -z "$API_USERNAME" ]]; then
-  read -rp "Nombre de usuario HTTP Basic para la API [adrian]: " API_USERNAME
-  API_USERNAME="${API_USERNAME:-adrian}"
-fi
-
-API_PASSWORD="${API_PASSWORD:-}"
-if [[ -z "$API_PASSWORD" ]]; then
-  read -rsp "Contraseña para la API (HTTP Basic): " API_PASSWORD
-  echo
-fi
+API_USERNAME="${API_USERNAME:-adrian}"
 DATABASE_URL="postgresql+psycopg2://adrian:${DB_PASSWORD}@localhost:5432/coaih"
-printf "DATABASE_URL=%s\nAPI_USERNAME=%s\nAPI_PASSWORD=%s\n" \
-  "$DATABASE_URL" "$API_USERNAME" "$API_PASSWORD" \
-  > .env
+cat <<EOF > .env
+DATABASE_URL=${DATABASE_URL}
+API_USERNAME=${API_USERNAME}
+# API_PASSWORD must be set manually before starting the service
+API_PASSWORD=
+EOF
 
 alembic upgrade head
 
@@ -82,7 +75,7 @@ else
 fi
 
 echo "[7/7] Configurando servicio y proxy"
-cp deploy/uvicorn.service "/etc/systemd/system/${SERVICE_NAME}.service"
+cp "${BACKEND_DIR}/deploy/uvicorn.service" "/etc/systemd/system/${SERVICE_NAME}.service"
 systemctl daemon-reload
 systemctl enable --now "${SERVICE_NAME}.service"
 

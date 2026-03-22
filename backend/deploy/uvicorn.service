@@ -3,11 +3,11 @@ Description=CoAIch FastAPI backend
 After=network.target
 
 [Service]
-User=pi
-Group=pi
-WorkingDirectory=/home/pi/CoAIch/backend
-EnvironmentFile=/home/pi/CoAIch/backend/.env
-ExecStart=/home/pi/CoAIch/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
+User=adrian
+Group=adrian
+WorkingDirectory=/home/adrian/CoAIch/backend
+EnvironmentFile=/home/adrian/CoAIch/backend/.env
+ExecStart=/home/adrian/CoAIch/backend/.venv/bin/uvicorn app.main:app --host 0.0.0.0 --port 8000
 Restart=on-failure
 RestartSec=5
 LimitNOFILE=65536
