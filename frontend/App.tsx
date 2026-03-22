@@ -205,8 +205,7 @@ function formatDuration(value?: number | string | null): string {
 
 function renderMultiline(text?: string) {
   if (!text) return null;
-  return text.split("
-").map((line, idx) => (
+  return text.split("\n").map((line, idx) => (
     <Text key={`line-${idx}`} style={{ marginTop: idx ? 6 : 0, textAlign: "center" }}>
       {line}
     </Text>
@@ -220,6 +219,43 @@ function getWeekdayFromDate(dateStr?: string): string {
   if (Number.isNaN(d.getTime())) return "";
   const names = ["Domingo", "Lunes", "Martes", "Mi?rcoles", "Jueves", "Viernes", "S?bado"];
   return names[d.getDay()] || "";
+}
+
+
+function normalizeBlockText(value?: string | null): string {
+  return (value || "").toLowerCase();
+}
+
+function detectTypesFromText(text: string, types: Set<string>) {
+  if (!text) return;
+  if (text.includes("strength") || text.includes("fuerza") || text.includes("power") || text.includes("weightlifting") || text.includes("halter")) {
+    types.add("strength");
+  }
+  if (text.includes("stamina") || text.includes("endurance") || text.includes("engine") || text.includes("conditioning") || text.includes("aerobic")) {
+    types.add("stamina");
+  }
+  if (text.includes("gymnastic") || text.includes("gymnastics") || text.includes("gimnast") || text.includes("gimnastic")) {
+    types.add("gymnastic");
+  }
+  if (text.includes("rest") || text.includes("descanso") || text.includes("recovery")) {
+    types.add("rest");
+  }
+}
+
+function getSessionTypes(session: SessionSummary & { blocks?: SessionDetail["blocks"] }): string[] {
+  const types = new Set<string>();
+  if (session.is_rest_day) types.add("rest");
+  const tags = session.session_tags || [];
+  tags.forEach((tag) => detectTypesFromText(normalizeBlockText(tag), types));
+  detectTypesFromText(normalizeBlockText(session.title || ""), types);
+  if (session.blocks) {
+    session.blocks.forEach((block) => {
+      detectTypesFromText(normalizeBlockText(block.title || ""), types);
+      detectTypesFromText(normalizeBlockText(block.content_mode || ""), types);
+      detectTypesFromText(normalizeBlockText(block.raw_text || ""), types);
+    });
+  }
+  return Array.from(types);
 }
 
 function formatDayLabel(session: SessionSummary): string {
@@ -355,6 +391,7 @@ function SessionListScreen({ navigation, route }: any) {
   const [loading, setLoading] = useState(true);
   const [jumpDate, setJumpDate] = useState("");
   const [filteredDate, setFilteredDate] = useState("");
+  const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const today = new Date();
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
   const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
@@ -363,9 +400,9 @@ function SessionListScreen({ navigation, route }: any) {
   useEffect(() => {
     navigation.setOptions({
       headerRight: () => (
-        <TouchableOpacity onPress={logout} style={{ paddingHorizontal: 12 }}>
+        <View style={{ flexDirection: "row", alignItems: "center" }}><TouchableOpacity onPress={() => navigation.push("Calendar")} style={{ paddingHorizontal: 12 }}><Text style={{ color: "#fff", fontWeight: "600" }}>Calendario</Text></TouchableOpacity><TouchableOpacity onPress={logout} style={{ paddingHorizontal: 12 }}>
           <Text style={{ color: "#fff", fontWeight: "600" }}>Salir</Text>
-        </TouchableOpacity>
+        </TouchableOpacity></View>
       ),
       headerLeft: () => (
         <Text style={{ color: "#fff", marginLeft: 12, fontSize: 12 }}>
@@ -402,9 +439,16 @@ function SessionListScreen({ navigation, route }: any) {
     );
   }
 
-  const effectiveSessions = filteredDate
+  const filteredByDate = filteredDate
     ? sessions.filter((s) => s.date === filteredDate)
     : sessions;
+
+  const effectiveSessions = selectedTypes.length
+    ? filteredByDate.filter((s) => {
+        const types = getSessionTypes(s as SessionSummary & { blocks?: SessionDetail["blocks"] });
+        return types.some((t) => selectedTypes.includes(t));
+      })
+    : filteredByDate;
 
   const rows: ListRow[] = [];
   const seenDays = new Set<string>();
@@ -516,6 +560,9 @@ function SessionListScreen({ navigation, route }: any) {
                 {session.is_rest_day && <Badge label="Rest" />}
                 {session.deload_week && <Badge label="Deload" />}
                 {session.data_status === "external_reference" && <Badge label="External" />}
+                {getSessionTypes(session as SessionSummary & { blocks?: SessionDetail["blocks"] }).map((t) => (
+                  <Badge key={t} label={t} />
+                ))}
                 {session.session_tags?.map((tag) => (
                   <Badge key={tag} label={tag} />
                 ))}
@@ -561,6 +608,130 @@ function CoachScreen() {
       <Text style={{ marginTop: 8, color: "#555", textAlign: "center" }}>
         Espacio para notas y planificación del coach
       </Text>
+    </SafeAreaView>
+  );
+}
+
+
+function CalendarViewScreen() {
+  const { basicAuth } = useContext(AuthContext);
+  const [sessions, setSessions] = useState<SessionSummary[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedDate, setSelectedDate] = useState("");
+  const today = new Date();
+  const [calendarYear, setCalendarYear] = useState(today.getFullYear());
+  const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
+
+  useEffect(() => {
+    if (!basicAuth) return;
+    setLoading(true);
+    fetch(`${API_BASE}/sessions/`, { headers: { Authorization: basicAuth } })
+      .then((res) => {
+        if (!res.ok) throw new Error(`API error: ${res.status}`);
+        return res.json();
+      })
+      .then((data) => {
+        setSessions(data);
+        if (!selectedDate && data.length > 0) {
+          setSelectedDate(data[0].date || "");
+        }
+      })
+      .finally(() => setLoading(false));
+  }, [basicAuth]);
+
+  const datesWithSessions = new Set(sessions.map((s) => s.date).filter(Boolean) as string[]);
+  const sessionsForDate = selectedDate
+    ? sessions.filter((s) => s.date === selectedDate)
+    : [];
+
+  if (loading) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator />
+        <Text style={{ marginTop: 12, textAlign: "center" }}>Cargando calendario...</Text>
+      </View>
+    );
+  }
+
+  return (
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
+      <View style={{ paddingHorizontal: 16, paddingTop: 12, alignItems: "center" }}>
+        <CalendarPicker
+          year={calendarYear}
+          monthIndex={calendarMonth}
+          datesWithSessions={datesWithSessions}
+          selectedDate={selectedDate}
+          onSelectDate={(date) => setSelectedDate(date)}
+          onChangeMonth={(delta) => {
+            const next = new Date(calendarYear, calendarMonth + delta, 1);
+            setCalendarYear(next.getFullYear());
+            setCalendarMonth(next.getMonth());
+          }}
+        />
+      </View>
+      <ScrollView contentContainerStyle={{ padding: 16 }}>
+        {selectedDate ? (
+          sessionsForDate.length > 0 ? (
+            sessionsForDate.map((session) => (
+              <View
+                key={session.id}
+                style={{
+                  backgroundColor: "white",
+                  padding: 16,
+                  borderRadius: 12,
+                  marginBottom: 12,
+                  shadowColor: "#000",
+                  shadowOpacity: 0.05,
+                  shadowRadius: 8,
+                  elevation: 3,
+                  alignItems: "center",
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+                  {formatDayLabel(session)}
+                </Text>
+                <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center", marginTop: 4 }}>
+                  {session.title || "Sesi?n del d?a"}
+                </Text>
+                <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
+                  {getSessionTypes(session as SessionSummary & { blocks?: SessionDetail["blocks"] }).map((t) => (
+                    <Badge key={t} label={t} />
+                  ))}
+                  {session.session_tags?.map((tag) => (
+                    <Badge key={tag} label={tag} />
+                  ))}
+                </View>
+                <Text style={{ marginTop: 8, color: "#333", textAlign: "center" }}>
+                  Duraci?n estimada: {formatDuration(session.estimated_duration_min)} min
+                </Text>
+                {session.blocks && session.blocks.length > 0 && (
+                  <View style={{ marginTop: 12 }}>
+                    <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+                      Bloques
+                    </Text>
+                    {session.blocks.map((block) => (
+                      <Text
+                        key={block.id}
+                        style={{ marginTop: 4, textAlign: "center", color: "#444" }}
+                      >
+                        {block.title || "Bloque"}
+                      </Text>
+                    ))}
+                  </View>
+                )}
+              </View>
+            ))
+          ) : (
+            <Text style={{ textAlign: "center", color: "#666" }}>
+              No hay sesiones para esta fecha
+            </Text>
+          )
+        ) : (
+          <Text style={{ textAlign: "center", color: "#666" }}>
+            Selecciona una fecha en el calendario
+          </Text>
+        )}
+      </ScrollView>
     </SafeAreaView>
   );
 }

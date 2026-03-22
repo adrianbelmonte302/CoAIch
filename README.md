@@ -267,7 +267,7 @@ pytest
 - La UI siempre muestra `raw_text` cuando falta canonico.
 - La base esta preparada para futuras fases (carga, feedback, lesiones, nutricion).
 - UI: listado agrupado por mes y dia, con salto por fecha y titulo compuesto por dia/fecha/nombre si existe.
-- UI: calendario en web con dias resaltados que tienen sesiones, encabezados centrados y textos centrados en listado/detalle. Login compacto con logo.
+- UI: calendario en web con dias resaltados que tienen sesiones, vista de calendario con resumen por dia, encabezados centrados y textos centrados en listado/detalle. Login compacto con logo. Filtros por tipo (strength, rest, stamina, gymnastic).
 
 ---
 
