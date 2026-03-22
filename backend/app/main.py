@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from app.api import sessions
+from app.api import auth, sessions
 from app.core.config import get_settings
 
 security = HTTPBasic()
@@ -31,6 +31,5 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-# MVP: sesiones públicas para evitar prompt de login en web.
-# Mantendremos el auth para futuros endpoints admin (import, etc.).
-app.include_router(sessions.router)
+app.include_router(auth.router)
+app.include_router(sessions.router, dependencies=[Depends(get_current_user)])

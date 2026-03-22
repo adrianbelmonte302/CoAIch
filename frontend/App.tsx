@@ -1,5 +1,15 @@
-import { useEffect, useState } from "react";
-import { ActivityIndicator, FlatList, Platform, SafeAreaView, ScrollView, Text, TouchableOpacity, View } from "react-native";
+import { createContext, useContext, useEffect, useState } from "react";
+import {
+  ActivityIndicator,
+  FlatList,
+  Platform,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
@@ -12,8 +22,23 @@ const API_BASE =
   (Platform.OS === "web" ? WEB_FALLBACK_BASE : "http://localhost:8000");
 const API_USER = process.env.EXPO_PUBLIC_API_USER || "";
 const API_PASS = process.env.EXPO_PUBLIC_API_PASS || "";
-const BASIC_AUTH =
-  API_USER && API_PASS ? `Basic ${btoa(`${API_USER}:${API_PASS}`)}` : "";
+
+function encodeBase64(value: string): string {
+  if (typeof globalThis.btoa === "function") {
+    return globalThis.btoa(value);
+  }
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const anyGlobal: any = globalThis as any;
+  if (anyGlobal.Buffer) {
+    return anyGlobal.Buffer.from(value, "utf8").toString("base64");
+  }
+  return value;
+}
+
+function buildBasicAuth(username: string, password: string): string {
+  if (!username || !password) return "";
+  return `Basic ${encodeBase64(`${username}:${password}`)}`;
+}
 
 type SessionSummary = {
   id: string;
@@ -56,6 +81,13 @@ type SessionDetail = SessionSummary & {
 };
 
 const Stack = createNativeStackNavigator();
+const AuthContext = createContext({
+  basicAuth: "",
+  username: "",
+  logout: () => {},
+});
+
+const AUTO_LOGOUT_MIN = 60;
 
 function Badge({ label }: { label: string }) {
   return (
@@ -73,13 +105,29 @@ function Badge({ label }: { label: string }) {
   );
 }
 
-function SessionListScreen({ navigation }: any) {
+function SessionListScreen({ navigation, route }: any) {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [loading, setLoading] = useState(true);
+  const { basicAuth, username, logout } = useContext(AuthContext);
+
+  useEffect(() => {
+    navigation.setOptions({
+      headerRight: () => (
+        <TouchableOpacity onPress={logout} style={{ paddingHorizontal: 12 }}>
+          <Text style={{ color: "#fff", fontWeight: "600" }}>Salir</Text>
+        </TouchableOpacity>
+      ),
+      headerLeft: () => (
+        <Text style={{ color: "#fff", marginLeft: 12, fontSize: 12 }}>
+          {username ? `Usuario: ${username}` : ""}
+        </Text>
+      ),
+    });
+  }, [navigation, logout]);
 
   useEffect(() => {
     fetch(`${API_BASE}/sessions/`, {
-      headers: BASIC_AUTH ? { Authorization: BASIC_AUTH } : undefined,
+      headers: basicAuth ? { Authorization: basicAuth } : undefined,
     })
       .then((res) => {
         if (!res.ok) {
@@ -146,10 +194,11 @@ function SessionDetailScreen({ route }: any) {
   const { sessionId } = route.params;
   const [session, setSession] = useState<SessionDetail | null>(null);
   const [loading, setLoading] = useState(true);
+  const { basicAuth } = useContext(AuthContext);
 
   useEffect(() => {
     fetch(`${API_BASE}/sessions/${sessionId}`, {
-      headers: BASIC_AUTH ? { Authorization: BASIC_AUTH } : undefined,
+      headers: basicAuth ? { Authorization: basicAuth } : undefined,
     })
       .then((res) => {
         if (!res.ok) {
@@ -241,12 +290,151 @@ function SessionDetailScreen({ route }: any) {
 }
 
 export default function App() {
+  const [username, setUsername] = useState(API_USER);
+  const [password, setPassword] = useState(API_PASS);
+  const [basicAuth, setBasicAuth] = useState(buildBasicAuth(API_USER, API_PASS));
+  const [loginError, setLoginError] = useState<string | null>(null);
+  const [rememberMe, setRememberMe] = useState(true);
+
+  useEffect(() => {
+    if (Platform.OS !== "web") return;
+    try {
+      const storedUser = window.localStorage.getItem("coaich_user") || "";
+      const storedPass = window.localStorage.getItem("coaich_pass") || "";
+      if (storedUser && storedPass) {
+        setUsername(storedUser);
+        setPassword(storedPass);
+        setBasicAuth(buildBasicAuth(storedUser, storedPass));
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, []);
+
+  const handleLogin = () => {
+    setLoginError(null);
+    fetch(`${API_BASE}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, password }),
+    })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Credenciales inválidas");
+        }
+        return res.json();
+      })
+      .then(() => {
+        const auth = buildBasicAuth(username, password);
+        setBasicAuth(auth);
+        if (Platform.OS === "web") {
+          try {
+            if (rememberMe) {
+              window.localStorage.setItem("coaich_user", username);
+              window.localStorage.setItem("coaich_pass", password);
+            } else {
+              window.localStorage.removeItem("coaich_user");
+              window.localStorage.removeItem("coaich_pass");
+            }
+          } catch {
+            // ignore storage errors
+          }
+        }
+      })
+      .catch((err) => setLoginError(err.message || "Error de autenticación"));
+  };
+
+  const handleLogout = () => {
+    setBasicAuth("");
+    setLoginError(null);
+    if (Platform.OS === "web") {
+      try {
+        window.localStorage.removeItem("coaich_user");
+        window.localStorage.removeItem("coaich_pass");
+      } catch {
+        // ignore storage errors
+      }
+    }
+  };
+
+  useEffect(() => {
+    if (!basicAuth) return;
+    const timeoutMs = AUTO_LOGOUT_MIN * 60 * 1000;
+    const timer = setTimeout(() => {
+      handleLogout();
+    }, timeoutMs);
+    return () => clearTimeout(timer);
+  }, [basicAuth]);
+
+  if (!basicAuth) {
+    return (
+      <SafeAreaView style={{ flex: 1, justifyContent: "center", padding: 24, backgroundColor: "#f6f6f6" }}>
+        <View style={{ backgroundColor: "white", padding: 24, borderRadius: 12 }}>
+          <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 12 }}>Iniciar sesión</Text>
+          <Text style={{ marginBottom: 6, color: "#555" }}>Usuario</Text>
+          <TextInput
+            value={username}
+            onChangeText={setUsername}
+            placeholder="usuario"
+            autoCapitalize="none"
+            style={{
+              borderWidth: 1,
+              borderColor: "#ddd",
+              borderRadius: 8,
+              padding: 10,
+              marginBottom: 12,
+            }}
+          />
+          <Text style={{ marginBottom: 6, color: "#555" }}>Contraseña</Text>
+          <TextInput
+            value={password}
+            onChangeText={setPassword}
+            placeholder="contraseña"
+            secureTextEntry
+            style={{
+              borderWidth: 1,
+              borderColor: "#ddd",
+              borderRadius: 8,
+              padding: 10,
+              marginBottom: 12,
+            }}
+          />
+          <TouchableOpacity
+            onPress={() => setRememberMe((prev) => !prev)}
+            style={{ flexDirection: "row", alignItems: "center", marginBottom: 12 }}
+          >
+            <View
+              style={{
+                width: 18,
+                height: 18,
+                borderWidth: 1,
+                borderColor: "#333",
+                marginRight: 8,
+                backgroundColor: rememberMe ? "#111" : "transparent",
+              }}
+            />
+            <Text>Recordarme en este navegador</Text>
+          </TouchableOpacity>
+          {loginError && <Text style={{ color: "#b00", marginBottom: 8 }}>{loginError}</Text>}
+          <TouchableOpacity
+            onPress={handleLogin}
+            style={{ backgroundColor: "#111", padding: 12, borderRadius: 8 }}
+          >
+            <Text style={{ color: "white", textAlign: "center", fontWeight: "600" }}>Entrar</Text>
+          </TouchableOpacity>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#100" }, headerTintColor: "#fff" }}>
-        <Stack.Screen name="Sessions" component={SessionListScreen} />
-        <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesión" }} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <AuthContext.Provider value={{ basicAuth, username, logout: handleLogout }}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#100" }, headerTintColor: "#fff" }}>
+          <Stack.Screen name="Sessions" component={SessionListScreen} />
+          <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesión" }} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </AuthContext.Provider>
   );
 }
