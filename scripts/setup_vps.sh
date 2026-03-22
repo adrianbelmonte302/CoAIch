@@ -42,6 +42,9 @@ fi
 sudo -u postgres psql -c "CREATE DATABASE coaich;" >/dev/null 2>&1 || true
 sudo -u postgres psql -c "CREATE USER adrian WITH PASSWORD '${DB_PASSWORD_ESCAPED}';" >/dev/null 2>&1 || true
 sudo -u postgres psql -c "GRANT ALL PRIVILEGES ON DATABASE coaich TO adrian;" >/dev/null 2>&1 || true
+sudo -u postgres psql -d coaich -c "GRANT ALL ON SCHEMA public TO adrian;" >/dev/null 2>&1 || true
+sudo -u postgres psql -d coaich -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO adrian;" >/dev/null 2>&1 || true
+sudo -u postgres psql -d coaich -c "ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO adrian;" >/dev/null 2>&1 || true
 
 echo "[4/7] Configurando backend"
 if [[ ! -d "${PROJECT_HOME}" ]]; then
