@@ -2,6 +2,7 @@ import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
+  Image,
   Platform,
   SafeAreaView,
   ScrollView,
@@ -92,11 +93,28 @@ const AuthContext = createContext({
 
 const AUTO_LOGOUT_MIN = 60;
 
+const LOGO_DATA_URI =
+  "data:image/svg+xml;utf8," +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="220" height="64" viewBox="0 0 220 64">' +
+      '<defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1">' +
+      '<stop offset="0" stop-color="#2563eb"/>' +
+      '<stop offset="1" stop-color="#0ea5e9"/>' +
+      '</linearGradient></defs>' +
+      '<rect x="4" y="6" rx="12" ry="12" width="52" height="52" fill="url(#g)"/>' +
+      '<path d="M20 40l6-14h12l-6 14h-12z" fill="#fff" opacity="0.95"/>' +
+      '<path d="M30 22l6 14h12l-6-14H30z" fill="#fff" opacity="0.85"/>' +
+      '<text x="70" y="40" font-family="Arial, Helvetica, sans-serif" font-size="26" font-weight="700" fill="#0f172a">CoAIch</text>' +
+      '<text x="70" y="56" font-family="Arial, Helvetica, sans-serif" font-size="12" fill="#64748b">Training Viewer</text>' +
+    '</svg>'
+  );
+
+
 function Badge({ label }: { label: string }) {
   return (
     <View
       style={{
-        backgroundColor: "#111",
+        backgroundColor: "#2563eb",
         paddingHorizontal: 8,
         paddingVertical: 2,
         borderRadius: 4,
@@ -123,7 +141,7 @@ function DatePicker({
       style: {
         flex: 1,
         borderWidth: 1,
-        borderColor: "#ddd",
+        borderColor: "#e2e8f0",
         borderRadius: 8,
         padding: "8px 10px",
         backgroundColor: "white",
@@ -139,7 +157,7 @@ function DatePicker({
       style={{
         flex: 1,
         borderWidth: 1,
-        borderColor: "#ddd",
+        borderColor: "#e2e8f0",
         borderRadius: 8,
         paddingHorizontal: 10,
         paddingVertical: 8,
@@ -280,7 +298,7 @@ function SessionListScreen({ navigation, route }: any) {
             onPress={() => setFilteredDate(jumpDate.trim())}
             style={{
               marginLeft: 8,
-              backgroundColor: "#111",
+              backgroundColor: "#2563eb",
               paddingHorizontal: 12,
               borderRadius: 8,
               justifyContent: "center",
@@ -330,8 +348,8 @@ function SessionListScreen({ navigation, route }: any) {
             );
           }
           const session = item.session;
-          const displayTitle = session.title || "Programa del d?a";
-          const displaySubtitle = formatDayLabel(session);
+          const displayTitle = session.title || formatDayLabel(session);
+          const displaySubtitle = session.title ? formatDayLabel(session) : "Sesión del día";
           return (
             <TouchableOpacity
               style={{
@@ -358,7 +376,7 @@ function SessionListScreen({ navigation, route }: any) {
                 ))}
               </View>
               <Text style={{ marginTop: 8, color: "#333", textAlign: "center" }}>
-                Duraci?n estimada: {session.estimated_duration_min ?? "?"} min
+                Duración estimada: {session.estimated_duration_min ?? "—"} min
               </Text>
             </TouchableOpacity>
           );
@@ -383,9 +401,9 @@ function WorkoutsDbScreen() {
 function AnalysisScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6", alignItems: "center", justifyContent: "center" }}>
-      <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>An?lisis</Text>
+      <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>Análisis</Text>
       <Text style={{ marginTop: 8, color: "#555", textAlign: "center" }}>
-        M?tricas y tendencias de entrenamiento
+        Métricas y tendencias de entrenamiento
       </Text>
     </SafeAreaView>
   );
@@ -396,7 +414,7 @@ function CoachScreen() {
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6", alignItems: "center", justifyContent: "center" }}>
       <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>Coach</Text>
       <Text style={{ marginTop: 8, color: "#555", textAlign: "center" }}>
-        Espacio para notas y planificaci?n del coach
+        Espacio para notas y planificación del coach
       </Text>
     </SafeAreaView>
   );
@@ -439,7 +457,7 @@ function SessionDetailScreen({ route }: any) {
   if (session.weekday) detailTitleParts.push(session.weekday);
   if (session.date) detailTitleParts.push(session.date);
   if (session.title) detailTitleParts.push(session.title);
-  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Sesi?n";
+  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Sesión";
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
@@ -455,6 +473,18 @@ function SessionDetailScreen({ route }: any) {
       <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
         Duración estimada: {session.estimated_duration_min ?? "—"} min
       </Text>
+      {session.blocks && session.blocks.length > 0 && (
+        <View style={{ marginTop: 12 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+            Bloques
+          </Text>
+          {session.blocks.map((block) => (
+            <Text key={block.id} style={{ marginTop: 4, textAlign: "center", color: "#444" }}>
+              {block.title || "Bloque"}
+            </Text>
+          ))}
+        </View>
+      )}
 
       {session.warmup && (
         <View style={{ marginTop: 16 }}>
@@ -513,9 +543,9 @@ function SessionDetailScreen({ route }: any) {
 
 function SessionsStack() {
   return (
-    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#100" }, headerTintColor: "#fff" }}>
+    <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }}>
       <Stack.Screen name="Sessions" component={SessionListScreen} />
-      <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesi?n" }} />
+      <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesión" }} />
     </Stack.Navigator>
   );
 }
@@ -599,10 +629,10 @@ export default function App() {
 
   if (!basicAuth) {
     return (
-      <SafeAreaView style={{ flex: 1, justifyContent: "center", padding: 24, backgroundColor: "#f6f6f6" }}>
-        <View style={{ backgroundColor: "white", padding: 24, borderRadius: 12 }}>
+      <SafeAreaView style={{ flex: 1, justifyContent: "center", padding: 16, backgroundColor: "#f1f5f9" }}>
+        <View style={{ backgroundColor: "white", padding: 20, borderRadius: 14, maxWidth: 360, width: "100%", alignSelf: "center", shadowColor: "#000", shadowOpacity: 0.08, shadowRadius: 10, elevation: 3 }}>
           <Text style={{ fontSize: 20, fontWeight: "700", marginBottom: 12 }}>Iniciar sesión</Text>
-          <Text style={{ marginBottom: 6, color: "#555" }}>Usuario</Text>
+          <Text style={{ marginBottom: 6, color: "#475569", textAlign: "center" }}>Usuario</Text>
           <TextInput
             value={username}
             onChangeText={setUsername}
@@ -610,13 +640,13 @@ export default function App() {
             autoCapitalize="none"
             style={{
               borderWidth: 1,
-              borderColor: "#ddd",
+              borderColor: "#e2e8f0",
               borderRadius: 8,
-              padding: 10,
+              padding: 9,
               marginBottom: 12,
             }}
           />
-          <Text style={{ marginBottom: 6, color: "#555" }}>Contraseña</Text>
+          <Text style={{ marginBottom: 6, color: "#475569", textAlign: "center" }}>Contraseña</Text>
           <TextInput
             value={password}
             onChangeText={setPassword}
@@ -624,9 +654,9 @@ export default function App() {
             secureTextEntry
             style={{
               borderWidth: 1,
-              borderColor: "#ddd",
+              borderColor: "#e2e8f0",
               borderRadius: 8,
-              padding: 10,
+              padding: 9,
               marginBottom: 12,
             }}
           />
@@ -646,12 +676,12 @@ export default function App() {
             />
             <Text>Recordarme en este navegador</Text>
           </TouchableOpacity>
-          {loginError && <Text style={{ color: "#b00", marginBottom: 8 }}>{loginError}</Text>}
+          {loginError && <Text style={{ color: "#b91c1c", marginBottom: 8, textAlign: "center" }}>{loginError}</Text>}
           <TouchableOpacity
             onPress={handleLogin}
-            style={{ backgroundColor: "#111", padding: 12, borderRadius: 8 }}
+            style={{ backgroundColor: "#2563eb", padding: 12, borderRadius: 8 }}
           >
-            <Text style={{ color: "white", textAlign: "center", fontWeight: "600" }}>Entrar</Text>
+            <Text style={{ color: "white", textAlign: "center", fontWeight: "700" }}>Entrar</Text>
           </TouchableOpacity>
         </View>
       </SafeAreaView>
@@ -663,7 +693,7 @@ export default function App() {
       <NavigationContainer>
         <Tab.Navigator
           screenOptions={{
-            headerStyle: { backgroundColor: "#100" },
+            headerStyle: { backgroundColor: "#0f172a" },
             headerTintColor: "#fff",
             tabBarStyle: { backgroundColor: "#fff" },
             tabBarLabelStyle: { fontSize: 12 },
@@ -671,7 +701,7 @@ export default function App() {
         >
           <Tab.Screen name="Sessions" component={SessionsStack} />
           <Tab.Screen name="WorkoutsDDBB" component={WorkoutsDbScreen} />
-          <Tab.Screen name="An?lisis" component={AnalysisScreen} />
+          <Tab.Screen name="Análisis" component={AnalysisScreen} />
           <Tab.Screen name="Coach" component={CoachScreen} />
         </Tab.Navigator>
       </NavigationContainer>

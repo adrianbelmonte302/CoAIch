@@ -267,7 +267,7 @@ pytest
 - La UI siempre muestra `raw_text` cuando falta canonico.
 - La base esta preparada para futuras fases (carga, feedback, lesiones, nutricion).
 - UI: listado agrupado por mes y dia, con salto por fecha y titulo compuesto por dia/fecha/nombre si existe.
-- UI: selector de fecha tipo calendario en web, encabezados centrados y textos centrados en el listado/detalle.
+- UI: selector de fecha tipo calendario en web, encabezados centrados y textos centrados en el listado/detalle. Login compacto con logo.
 
 ---
 
@@ -282,7 +282,7 @@ Estado actual:
 - Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
 - Frontend Expo: login, recordarme, auto logout y logout en header.
 - UI web: calendario simple (input de fecha) para filtrar por dia, y agrupacion por meses/dias en la lista.
-- UI web: mejora visual con textos centrados y titulos de meses/dias centrados.
+- UI web: mejora visual con textos centrados, titulos de meses/dias centrados y logo en login.
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
 - Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
 - Deploy scripts aseguran dependencias web antes de `export:web` para evitar fallos en VPS.
