@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_DIR="/home/adrian/CoAIch"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 BACKEND_DIR="${PROJECT_DIR}/backend"
 SERVICE="coai-ch-backend"
 
@@ -11,6 +12,10 @@ if [[ "$EUID" -eq 0 ]]; then
 fi
 
 cd "${PROJECT_DIR}"
+if [[ ! -f "${BACKEND_DIR}/requirements.txt" ]]; then
+  echo "No se encontro requirements.txt en ${BACKEND_DIR}. Revisa la ruta del repo."
+  exit 1
+fi
 echo "[1/5] Actualizando código"
 git fetch origin
 git reset --hard origin/main
@@ -29,6 +34,10 @@ sudo journalctl -u "${SERVICE}" --no-pager -n 20
 
 echo "[5/5] (Opcional) rebuild frontend web"
 cd "${PROJECT_DIR}/frontend"
+if [[ ! -f "${PROJECT_DIR}/frontend/package.json" ]]; then
+  echo "No se encontro package.json en ${PROJECT_DIR}/frontend. Revisa la ruta del repo."
+  exit 1
+fi
 npm install
 WEB_API_BASE="${EXPO_PUBLIC_API_BASE:-${API_BASE:-http://127.0.0.1:8000}}"
 EXPO_PUBLIC_API_BASE="${WEB_API_BASE}" npx expo export:web

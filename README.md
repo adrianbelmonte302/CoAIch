@@ -227,6 +227,7 @@ pytest
 - Si la web llama a `localhost:8000`, es build viejo.
 - Rehacer build con `EXPO_PUBLIC_API_BASE` y publicar `web-build/`.
 - Si `alembic` falla por caracteres especiales, escapa en `DATABASE_URL`.
+- Si aparece `ConfigError: expected package.json ...`, estas en el directorio equivocado. Usa `scripts/deploy_web.sh` o entra en `frontend/` antes de exportar.
 
 ---
 
@@ -248,6 +249,7 @@ Estado actual:
 - Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
 - Frontend Expo: login, recordarme, auto logout y logout en header.
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
+- Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
 - `prepare_setup.sh` ahora deja permisos de deploy configurados.
 
 Tabla raw/canonical (resumen):

@@ -126,8 +126,12 @@ function SessionListScreen({ navigation, route }: any) {
   }, [navigation, logout]);
 
   useEffect(() => {
+    if (!basicAuth) {
+      return;
+    }
+    setLoading(true);
     fetch(`${API_BASE}/sessions/`, {
-      headers: basicAuth ? { Authorization: basicAuth } : undefined,
+      headers: { Authorization: basicAuth },
     })
       .then((res) => {
         if (!res.ok) {
@@ -137,7 +141,7 @@ function SessionListScreen({ navigation, route }: any) {
       })
       .then((data) => setSessions(data))
       .finally(() => setLoading(false));
-  }, []);
+  }, [basicAuth]);
 
   if (loading) {
     return (
@@ -197,8 +201,12 @@ function SessionDetailScreen({ route }: any) {
   const { basicAuth } = useContext(AuthContext);
 
   useEffect(() => {
+    if (!basicAuth) {
+      return;
+    }
+    setLoading(true);
     fetch(`${API_BASE}/sessions/${sessionId}`, {
-      headers: basicAuth ? { Authorization: basicAuth } : undefined,
+      headers: { Authorization: basicAuth },
     })
       .then((res) => {
         if (!res.ok) {
@@ -208,7 +216,7 @@ function SessionDetailScreen({ route }: any) {
       })
       .then((data) => setSession(data))
       .finally(() => setLoading(false));
-  }, [sessionId]);
+  }, [sessionId, basicAuth]);
 
   if (loading || !session) {
     return (

@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-PROJECT_DIR="/home/adrian/CoAIch"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "${SCRIPT_DIR}/.." && pwd)"
 FRONTEND_DIR="${PROJECT_DIR}/frontend"
 WEB_ROOT="/var/www/html"
 
@@ -11,6 +12,10 @@ if [[ "$EUID" -eq 0 ]]; then
 fi
 
 cd "${PROJECT_DIR}"
+if [[ ! -f "${FRONTEND_DIR}/package.json" ]]; then
+  echo "No se encontro package.json en ${FRONTEND_DIR}. Revisa la ruta del repo."
+  exit 1
+fi
 echo "[1/3] Actualizando codigo"
 git fetch origin
 git reset --hard origin/main
