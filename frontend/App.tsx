@@ -3,7 +3,11 @@ import { ActivityIndicator, FlatList, SafeAreaView, ScrollView, Text, TouchableO
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
-const API_BASE = "http://localhost:8000";
+const API_BASE = process.env.EXPO_PUBLIC_API_BASE || "http://localhost:8000";
+const API_USER = process.env.EXPO_PUBLIC_API_USER || "";
+const API_PASS = process.env.EXPO_PUBLIC_API_PASS || "";
+const BASIC_AUTH =
+  API_USER && API_PASS ? `Basic ${btoa(`${API_USER}:${API_PASS}`)}` : "";
 
 type SessionSummary = {
   id: string;
@@ -68,7 +72,9 @@ function SessionListScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/sessions`)
+    fetch(`${API_BASE}/sessions`, {
+      headers: BASIC_AUTH ? { Authorization: BASIC_AUTH } : undefined,
+    })
       .then((res) => res.json())
       .then((data) => setSessions(data))
       .finally(() => setLoading(false));
@@ -131,7 +137,9 @@ function SessionDetailScreen({ route }: any) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch(`${API_BASE}/sessions/${sessionId}`)
+    fetch(`${API_BASE}/sessions/${sessionId}`, {
+      headers: BASIC_AUTH ? { Authorization: BASIC_AUTH } : undefined,
+    })
       .then((res) => res.json())
       .then((data) => setSession(data))
       .finally(() => setLoading(false));
