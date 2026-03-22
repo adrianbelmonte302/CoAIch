@@ -248,6 +248,7 @@ Estado actual:
 - Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
 - Frontend Expo: login, recordarme, auto logout y logout en header.
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
+- `prepare_setup.sh` ahora deja permisos de deploy configurados.
 
 Tabla raw/canonical (resumen):
 - raw_imports: JSON original completo + metadatos.
