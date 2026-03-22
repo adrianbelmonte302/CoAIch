@@ -147,6 +147,7 @@ npm run start
 **Build Web (correcto para VPS)**
 ```
 cd frontend
+ npx expo install react-native-web@~0.19.6 react-dom@18.2.0 @expo/webpack-config@^19.0.0
 EXPO_PUBLIC_API_BASE=http://<IP-VPS>:8000 npx expo export:web
 ```
 Output: `frontend/web-build/`
@@ -228,6 +229,7 @@ pytest
 - Rehacer build con `EXPO_PUBLIC_API_BASE` y publicar `web-build/`.
 - Si `alembic` falla por caracteres especiales, escapa en `DATABASE_URL`.
 - Si aparece `ConfigError: expected package.json ...`, estas en el directorio equivocado. Usa `scripts/deploy_web.sh` o entra en `frontend/` antes de exportar.
+- Si aparece error de dependencias web, ejecuta `npx expo install react-native-web@~0.19.6 react-dom@18.2.0 @expo/webpack-config@^19.0.0` antes de `export:web`.
 
 ---
 
@@ -250,6 +252,7 @@ Estado actual:
 - Frontend Expo: login, recordarme, auto logout y logout en header.
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
 - Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
+- Deploy scripts aseguran dependencias web antes de `export:web` para evitar fallos en VPS.
 - `prepare_setup.sh` ahora deja permisos de deploy configurados.
 
 Tabla raw/canonical (resumen):

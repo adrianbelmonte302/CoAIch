@@ -23,6 +23,8 @@ git reset --hard origin/main
 cd "${FRONTEND_DIR}"
 echo "[2/3] Construyendo web"
 npm install
+echo "Asegurando dependencias web (react-native-web, react-dom, @expo/webpack-config)"
+npx expo install react-native-web@~0.19.6 react-dom@18.2.0 @expo/webpack-config@^19.0.0
 WEB_API_BASE="${EXPO_PUBLIC_API_BASE:-${API_BASE:-http://127.0.0.1:8000}}"
 EXPO_PUBLIC_API_BASE="${WEB_API_BASE}" npx expo export:web
 
