@@ -174,7 +174,12 @@ cd ~/CoAIch
 sudo chmod +x scripts/prepare_setup.sh
 sudo scripts/prepare_setup.sh
 ```
-2. Despliegues posteriores:
+2. Hacer scripts ejecutables (si hace falta):
+```
+cd ~/CoAIch
+./scripts/make_executable.sh
+```
+3. Despliegues posteriores:
 ```
 cd ~/CoAIch
 chmod +x scripts/deploy_app.sh
@@ -253,6 +258,7 @@ Estado actual:
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
 - Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
 - Deploy scripts aseguran dependencias web antes de `export:web` para evitar fallos en VPS.
+- Script `make_executable.sh` para dejar todos los scripts con permisos de ejecucion en una sola orden.
 - `prepare_setup.sh` ahora deja permisos de deploy configurados.
 
 Tabla raw/canonical (resumen):
