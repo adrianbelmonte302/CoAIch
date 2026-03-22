@@ -1,16 +1,17 @@
 from datetime import date
 from typing import List, Optional
+from uuid import UUID
 
 from pydantic import BaseModel
+from pydantic.config import ConfigDict
 
 
 class ORMSchema(BaseModel):
-    class Config:
-        orm_mode = True
+    model_config = ConfigDict(from_attributes=True)
 
 
 class BlockExerciseRawSchema(ORMSchema):
-    id: str
+    id: UUID
     name: Optional[str]
     format: Optional[str]
     notes: Optional[str]
@@ -18,7 +19,7 @@ class BlockExerciseRawSchema(ORMSchema):
 
 
 class BlockItemCanonicalSchema(ORMSchema):
-    id: str
+    id: UUID
     movement_name: Optional[str]
     movement_family: Optional[str]
     pattern_primary: Optional[str]
@@ -33,7 +34,7 @@ class BlockItemCanonicalSchema(ORMSchema):
 
 
 class SessionBlockSchema(ORMSchema):
-    id: str
+    id: UUID
     block_order: int
     original_block_id: Optional[str]
     title: Optional[str]
@@ -57,7 +58,7 @@ class WarmupSchema(ORMSchema):
 
 
 class SessionSummarySchema(ORMSchema):
-    id: str
+    id: UUID
     date: Optional[date]
     weekday: Optional[str]
     title: Optional[str]
@@ -72,4 +73,4 @@ class SessionSummarySchema(ORMSchema):
 class SessionDetailSchema(SessionSummarySchema):
     warmup: Optional[WarmupSchema]
     blocks: List[SessionBlockSchema] = []
-    raw_import_id: str
+    raw_import_id: UUID
