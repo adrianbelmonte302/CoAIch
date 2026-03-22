@@ -9,3 +9,4 @@ python-dotenv
 psycopg2-binary
 pytest
 httpx
+python-dateutil
