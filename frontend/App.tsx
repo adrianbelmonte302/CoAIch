@@ -195,10 +195,38 @@ function formatMonthLabel(monthKey: string): string {
   return `${monthNames[month - 1] || "Mes"} ${y}`;
 }
 
+
+function formatDuration(value?: number | string | null): string {
+  if (value === null || value === undefined || value === "") return "?";
+  const num = typeof value === "string" ? Number(value) : value;
+  if (!Number.isFinite(num)) return "?";
+  return String(Math.round(num));
+}
+
+function renderMultiline(text?: string) {
+  if (!text) return null;
+  return text.split("
+").map((line, idx) => (
+    <Text key={`line-${idx}`} style={{ marginTop: idx ? 6 : 0, textAlign: "center" }}>
+      {line}
+    </Text>
+  ));
+}
+
+
+function getWeekdayFromDate(dateStr?: string): string {
+  if (!dateStr) return "";
+  const d = new Date(`${dateStr}T00:00:00`);
+  if (Number.isNaN(d.getTime())) return "";
+  const names = ["Domingo", "Lunes", "Martes", "Mi?rcoles", "Jueves", "Viernes", "S?bado"];
+  return names[d.getDay()] || "";
+}
+
 function formatDayLabel(session: SessionSummary): string {
   if (!session.date) return "Fecha sin definir";
   const parts: string[] = [];
-  if (session.weekday) parts.push(session.weekday);
+  const weekday = session.weekday || getWeekdayFromDate(session.date);
+  if (weekday) parts.push(weekday);
   parts.push(session.date);
   return parts.join(" ");
 }
@@ -208,11 +236,128 @@ type ListRow =
   | { type: "day"; key: string; label: string }
   | { type: "session"; key: string; session: SessionSummary };
 
+
+function getMonthLabel(year: number, monthIndex: number): string {
+  const monthNames = [
+    "Enero",
+    "Febrero",
+    "Marzo",
+    "Abril",
+    "Mayo",
+    "Junio",
+    "Julio",
+    "Agosto",
+    "Septiembre",
+    "Octubre",
+    "Noviembre",
+    "Diciembre",
+  ];
+  return `${monthNames[monthIndex]} ${year}`;
+}
+
+function buildMonthDays(year: number, monthIndex: number) {
+  const first = new Date(year, monthIndex, 1);
+  const last = new Date(year, monthIndex + 1, 0);
+  const daysInMonth = last.getDate();
+  const startWeekday = (first.getDay() + 6) % 7; // Monday=0
+  const cells: Array<{ day?: number }> = [];
+  for (let i = 0; i < startWeekday; i++) cells.push({});
+  for (let d = 1; d <= daysInMonth; d++) cells.push({ day: d });
+  while (cells.length % 7 !== 0) cells.push({});
+  return cells;
+}
+
+function toDateKey(year: number, monthIndex: number, day: number): string {
+  const mm = String(monthIndex + 1).padStart(2, "0");
+  const dd = String(day).padStart(2, "0");
+  return `${year}-${mm}-${dd}`;
+}
+
+function CalendarPicker({
+  year,
+  monthIndex,
+  datesWithSessions,
+  selectedDate,
+  onSelectDate,
+  onChangeMonth,
+}: {
+  year: number;
+  monthIndex: number;
+  datesWithSessions: Set<string>;
+  selectedDate: string;
+  onSelectDate: (date: string) => void;
+  onChangeMonth: (delta: number) => void;
+}) {
+  const cells = buildMonthDays(year, monthIndex);
+  const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
+  return (
+    <View style={{ width: "100%", marginBottom: 12 }}>
+      <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
+        <TouchableOpacity
+          onPress={() => onChangeMonth(-1)}
+          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: "700", color: "#2563eb" }}>?</Text>
+        </TouchableOpacity>
+        <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>
+          {getMonthLabel(year, monthIndex)}
+        </Text>
+        <TouchableOpacity
+          onPress={() => onChangeMonth(1)}
+          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+        >
+          <Text style={{ fontSize: 18, fontWeight: "700", color: "#2563eb" }}>?</Text>
+        </TouchableOpacity>
+      </View>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 6 }}>
+        {weekDays.map((d) => (
+          <Text key={d} style={{ width: "14.2%", textAlign: "center", color: "#64748b" }}>
+            {d}
+          </Text>
+        ))}
+      </View>
+      <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
+        {cells.map((cell, idx) => {
+          if (!cell.day) {
+            return <View key={`empty-${idx}`} style={{ width: "14.2%", height: 36 }} />;
+          }
+          const dateKey = toDateKey(year, monthIndex, cell.day);
+          const hasSession = datesWithSessions.has(dateKey);
+          const isSelected = selectedDate === dateKey;
+          return (
+            <TouchableOpacity
+              key={dateKey}
+              onPress={() => onSelectDate(dateKey)}
+              style={{ width: "14.2%", height: 36, alignItems: "center", justifyContent: "center" }}
+            >
+              <View
+                style={{
+                  width: 28,
+                  height: 28,
+                  borderRadius: 14,
+                  backgroundColor: isSelected ? "#2563eb" : hasSession ? "#dbeafe" : "transparent",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: isSelected ? "#fff" : "#0f172a" }}>{cell.day}</Text>
+              </View>
+            </TouchableOpacity>
+          );
+        })}
+      </View>
+    </View>
+  );
+}
+
 function SessionListScreen({ navigation, route }: any) {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [jumpDate, setJumpDate] = useState("");
   const [filteredDate, setFilteredDate] = useState("");
+  const today = new Date();
+  const [calendarYear, setCalendarYear] = useState(today.getFullYear());
+  const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
   const { basicAuth, username, logout } = useContext(AuthContext);
 
   useEffect(() => {
@@ -489,8 +634,8 @@ function SessionDetailScreen({ route }: any) {
       {session.warmup && (
         <View style={{ marginTop: 16 }}>
           <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
-          <Text style={{ marginTop: 4 }}>{session.warmup.raw_text || session.warmup.mobility}</Text>
-          {session.warmup.activation && <Text style={{ marginTop: 2 }}>{session.warmup.activation}</Text>}
+          {renderMultiline(session.warmup.raw_text || session.warmup.mobility)}
+          {session.warmup.activation && renderMultiline(session.warmup.activation)}
         </View>
       )}
 
