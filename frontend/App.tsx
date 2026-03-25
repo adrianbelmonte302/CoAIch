@@ -344,6 +344,21 @@ function normalizeBlockText(value?: string | null): string {
   return (value || "").toLowerCase();
 }
 
+function normalizeType(value?: string | null): string {
+  if (!value) return "";
+  return value.trim().toLowerCase();
+}
+
+function formatTypeLabel(value?: string | null): string {
+  const normalized = normalizeType(value);
+  if (!normalized) return "";
+  if (normalized === "rest") return "Rest";
+  if (normalized === "strength") return "Strength";
+  if (normalized === "stamina") return "Stamina";
+  if (normalized === "gymnastic") return "Gymnastic";
+  return normalized.charAt(0).toUpperCase() + normalized.slice(1);
+}
+
 function detectTypesFromText(text: string, types: Set<string>) {
   if (!text) return;
   if (text.includes("strength") || text.includes("fuerza") || text.includes("power") || text.includes("weightlifting") || text.includes("halter")) {
@@ -386,7 +401,9 @@ function getProgramDayTypes(programDay: ProgramDaySummary | ProgramDayDetail): s
     });
   });
 
-  return Array.from(types);
+  return Array.from(types)
+    .map((value) => normalizeType(value))
+    .filter(Boolean);
 }
 
 function getProgramDayBlockTitles(programDay: ProgramDaySummary | ProgramDayDetail): string[] {
@@ -721,7 +738,9 @@ function SessionListScreen({ navigation, route }: any) {
                   backgroundColor: active ? "#2563eb" : "#e2e8f0",
                 }}
               >
-                <Text style={{ color: active ? "#fff" : "#0f172a", fontWeight: "600" }}>{t}</Text>
+                <Text style={{ color: active ? "#fff" : "#0f172a", fontWeight: "600" }}>
+                  {formatTypeLabel(t)}
+                </Text>
               </TouchableOpacity>
             );
           })}
@@ -831,9 +850,20 @@ function SessionListScreen({ navigation, route }: any) {
           }
           if (item.type === "day") {
             return (
-              <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 8, color: "#1f2937", textAlign: "center" }}>
-                {item.label}
-              </Text>
+              <View
+                style={{
+                  alignSelf: "center",
+                  backgroundColor: "#e2e8f0",
+                  paddingHorizontal: 14,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                  marginBottom: 10,
+                }}
+              >
+                <Text style={{ fontSize: 18, fontWeight: "800", color: "#0f172a", textAlign: "center" }}>
+                  {item.label}
+                </Text>
+              </View>
             );
           }
           const session = item.session as DisplayDay;
@@ -860,7 +890,7 @@ function SessionListScreen({ navigation, route }: any) {
                 {session.is_rest_day && <Badge label="Rest" />}
                 {session.deload_week && <Badge label="Deload" />}
                 {getProgramDayTypes(session.raw as ProgramDaySummary).map((t) => (
-                  <Badge key={t} label={t} />
+                  <Badge key={t} label={formatTypeLabel(t)} />
                 ))}
                 {session.tags.map((tag) => (
                   <Badge key={tag} label={tag} />
@@ -1043,7 +1073,7 @@ function CalendarViewScreen() {
                   </Text>
                   <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
                     {getProgramDayTypes(detail as ProgramDayDetail).map((t) => (
-                      <Badge key={t} label={t} />
+                      <Badge key={t} label={formatTypeLabel(t)} />
                     ))}
                     {tags.map((tag: string) => (
                       <Badge key={tag} label={tag} />
