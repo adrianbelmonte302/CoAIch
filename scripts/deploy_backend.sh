@@ -20,10 +20,13 @@ echo "[2/4] Actualizando dependencias"
 source .venv/bin/activate
 pip install -r requirements.txt
 
-echo "[3/4] Ejecutando migraciones"
+echo "[3/5] Ejecutando migraciones"
 alembic upgrade head
 
-echo "[4/4] Reiniciando servicio backend"
+echo "[4/5] Migrando datos legacy a program_days"
+python scripts/migrate_v1_to_v2.py
+
+echo "[5/5] Reiniciando servicio backend"
 sudo systemctl restart "${SERVICE}"
 sudo journalctl -u "${SERVICE}" --no-pager -n 20
 

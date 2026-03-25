@@ -28,14 +28,17 @@ echo "[2/5] Actualizando dependencias"
 source .venv/bin/activate
 pip install -r requirements.txt
 
-echo "[3/5] Ejecutando migraciones"
+echo "[3/6] Ejecutando migraciones"
 alembic upgrade head
 
-echo "[4/5] Reiniciando servicio backend"
+echo "[4/6] Migrando datos legacy a program_days"
+python scripts/migrate_v1_to_v2.py
+
+echo "[5/6] Reiniciando servicio backend"
 sudo systemctl restart "${SERVICE}"
 sudo journalctl -u "${SERVICE}" --no-pager -n 20
 
-echo "[5/5] (Opcional) rebuild frontend web"
+echo "[6/6] (Opcional) rebuild frontend web"
 cd "${PROJECT_DIR}/frontend"
 if [[ ! -f "${PROJECT_DIR}/frontend/package.json" ]]; then
   echo "No se encontro package.json en ${PROJECT_DIR}/frontend. Revisa la ruta del repo."

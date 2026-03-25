@@ -238,6 +238,43 @@ function renderTextBlock(value?: any) {
   return renderMultiline(text);
 }
 
+function formatLoad(load?: any): string {
+  if (!load) return "";
+  const parts: string[] = [];
+  if (load.prescribed_kg !== null && load.prescribed_kg !== undefined) {
+    parts.push(`${load.prescribed_kg}kg`);
+  } else if (load.prescribed_kg_min || load.prescribed_kg_max) {
+    parts.push(`${load.prescribed_kg_min ?? ""}-${load.prescribed_kg_max ?? ""}kg`);
+  }
+  if (load.percent_1rm_min || load.percent_1rm_max) {
+    parts.push(`${load.percent_1rm_min ?? ""}-${load.percent_1rm_max ?? ""}% 1RM`);
+  }
+  if (load.rpe) parts.push(`RPE ${load.rpe}`);
+  if (load.rir) parts.push(`RIR ${load.rir}`);
+  if (load.load_notes) parts.push(load.load_notes);
+  return parts.filter(Boolean).join(" ");
+}
+
+function formatSetStructure(entry?: any): string {
+  if (!entry) return "";
+  const parts: string[] = [];
+  if (entry.sets) parts.push(`${entry.sets} sets`);
+  if (entry.rounds) parts.push(`${entry.rounds} rounds`);
+  if (entry.reps) parts.push(`${entry.reps} reps`);
+  if (entry.reps_per_side) parts.push(`${entry.reps_per_side} reps/side`);
+  if (entry.duration_min) parts.push(`${entry.duration_min} min`);
+  if (entry.duration_sec) parts.push(`${entry.duration_sec} sec`);
+  if (entry.distance_m) parts.push(`${entry.distance_m} m`);
+  if (entry.calories) parts.push(`${entry.calories} cal`);
+  if (entry.rest_sec) parts.push(`rest ${entry.rest_sec}s`);
+  const loadText = formatLoad(entry.load);
+  if (loadText) parts.push(loadText);
+  if (entry.tempo) parts.push(`tempo ${entry.tempo}`);
+  if (entry.target) parts.push(`target ${entry.target}`);
+  if (entry.notes) parts.push(entry.notes);
+  return parts.filter(Boolean).join(" · ");
+}
+
 
 function getWeekdayFromDate(dateStr?: string): string {
   if (!dateStr) return "";
@@ -1020,6 +1057,15 @@ function SessionDetailScreen({ route }: any) {
                       {exercise?.format && (
                         <Text style={{ color: "#444", textAlign: "center" }}>{exercise.format}</Text>
                       )}
+                      {(exercise?.set_structure || []).map((setEntry: any, sIdx: number) => {
+                        const line = formatSetStructure(setEntry);
+                        if (!line) return null;
+                        return (
+                          <Text key={`set-${sIdx}`} style={{ color: "#555", textAlign: "center", marginTop: 2 }}>
+                            {line}
+                          </Text>
+                        );
+                      })}
                       {exercise?.notes && renderTextBlock(exercise.notes)}
                     </View>
                   ))}

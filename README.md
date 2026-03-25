@@ -233,6 +233,11 @@ chmod +x scripts/deploy_app.sh
 EXPO_PUBLIC_API_BASE=http://<IP-VPS>:8000 ./scripts/deploy_app.sh
 ```
 
+`deploy_app.sh` y `deploy_backend.sh` ejecutan automaticamente la migracion v1->v2:
+```
+python scripts/migrate_v1_to_v2.py
+```
+
 **Apagar la app (backend + nginx)**
 ```
 cd ~/CoAIch
