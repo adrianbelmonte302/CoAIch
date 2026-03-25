@@ -422,6 +422,7 @@ function CalendarPicker({
   selectedDate,
   onSelectDate,
   onChangeMonth,
+  size = "normal",
 }: {
   year: number;
   monthIndex: number;
@@ -429,31 +430,41 @@ function CalendarPicker({
   selectedDate: string;
   onSelectDate: (date: string) => void;
   onChangeMonth: (delta: number) => void;
+  size?: "normal" | "compact";
 }) {
   const cells = buildMonthDays(year, monthIndex);
   const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
+  const isCompact = size === "compact";
+  const cellHeight = isCompact ? 30 : 36;
+  const circleSize = isCompact ? 22 : 28;
+  const headerFont = isCompact ? 16 : 18;
+  const weekDayFont = isCompact ? 11 : 12;
+  const dayFont = isCompact ? 12 : 14;
   return (
-    <View style={{ width: "100%", marginBottom: 12 }}>
+    <View style={{ width: "100%", marginBottom: isCompact ? 8 : 12 }}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
         <TouchableOpacity
           onPress={() => onChangeMonth(-1)}
-          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+          style={{ paddingHorizontal: 12, paddingVertical: isCompact ? 4 : 6 }}
         >
-          <Text style={{ fontSize: 18, fontWeight: "700", color: "#2563eb" }}>{"<"}</Text>
+          <Text style={{ fontSize: headerFont, fontWeight: "700", color: "#2563eb" }}>{"<"}</Text>
         </TouchableOpacity>
-        <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>
+        <Text style={{ fontSize: headerFont, fontWeight: "700", textAlign: "center" }}>
           {getMonthLabel(year, monthIndex)}
         </Text>
         <TouchableOpacity
           onPress={() => onChangeMonth(1)}
-          style={{ paddingHorizontal: 12, paddingVertical: 6 }}
+          style={{ paddingHorizontal: 12, paddingVertical: isCompact ? 4 : 6 }}
         >
-          <Text style={{ fontSize: 18, fontWeight: "700", color: "#2563eb" }}>{">"}</Text>
+          <Text style={{ fontSize: headerFont, fontWeight: "700", color: "#2563eb" }}>{">"}</Text>
         </TouchableOpacity>
       </View>
       <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 6 }}>
         {weekDays.map((d) => (
-          <Text key={d} style={{ width: "14.2%", textAlign: "center", color: "#64748b" }}>
+          <Text
+            key={d}
+            style={{ width: "14.2%", textAlign: "center", color: "#64748b", fontSize: weekDayFont }}
+          >
             {d}
           </Text>
         ))}
@@ -461,7 +472,7 @@ function CalendarPicker({
       <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
         {cells.map((cell, idx) => {
           if (!cell.day) {
-            return <View key={`empty-${idx}`} style={{ width: "14.2%", height: 36 }} />;
+            return <View key={`empty-${idx}`} style={{ width: "14.2%", height: cellHeight }} />;
           }
           const dateKey = toDateKey(year, monthIndex, cell.day);
           const hasSession = datesWithSessions.has(dateKey);
@@ -470,19 +481,21 @@ function CalendarPicker({
             <TouchableOpacity
               key={dateKey}
               onPress={() => onSelectDate(dateKey)}
-              style={{ width: "14.2%", height: 36, alignItems: "center", justifyContent: "center" }}
+              style={{ width: "14.2%", height: cellHeight, alignItems: "center", justifyContent: "center" }}
             >
               <View
                 style={{
-                  width: 28,
-                  height: 28,
-                  borderRadius: 14,
+                  width: circleSize,
+                  height: circleSize,
+                  borderRadius: circleSize / 2,
                   backgroundColor: isSelected ? "#2563eb" : hasSession ? "#dbeafe" : "transparent",
                   alignItems: "center",
                   justifyContent: "center",
                 }}
               >
-                <Text style={{ color: isSelected ? "#fff" : "#0f172a" }}>{cell.day}</Text>
+                <Text style={{ color: isSelected ? "#fff" : "#0f172a", fontSize: dayFont }}>
+                  {cell.day}
+                </Text>
               </View>
             </TouchableOpacity>
           );
@@ -642,6 +655,7 @@ function SessionListScreen({ navigation, route }: any) {
             setCalendarYear(next.getFullYear());
             setCalendarMonth(next.getMonth());
           }}
+          size="compact"
         />
         <View style={{ flexDirection: "row", marginBottom: 12, width: "100%", justifyContent: "center" }}>
           <TouchableOpacity
