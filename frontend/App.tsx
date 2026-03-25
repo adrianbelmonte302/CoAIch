@@ -831,7 +831,7 @@ function SessionListScreen({ navigation, route }: any) {
           }
           if (item.type === "day") {
             return (
-              <Text style={{ fontSize: 14, fontWeight: "600", marginBottom: 6, color: "#444", textAlign: "center" }}>
+              <Text style={{ fontSize: 16, fontWeight: "700", marginBottom: 8, color: "#1f2937", textAlign: "center" }}>
                 {item.label}
               </Text>
             );
@@ -1402,12 +1402,37 @@ export default function App() {
     <AuthContext.Provider value={{ basicAuth, username, logout: handleLogout }}>
       <NavigationContainer>
         <Tab.Navigator
-          screenOptions={{
+          screenOptions={({ route }) => ({
             headerStyle: { backgroundColor: "#0f172a" },
             headerTintColor: "#fff",
             tabBarStyle: { backgroundColor: "#fff" },
             tabBarLabelStyle: { fontSize: 12 },
-          }}
+            tabBarIcon: ({ color, size }) => {
+              const label =
+                route.name === "Sessions"
+                  ? "S"
+                  : route.name === "WorkoutsDDBB"
+                  ? "W"
+                  : route.name === "Análisis"
+                  ? "A"
+                  : "C";
+              return (
+                <View
+                  style={{
+                    width: size + 6,
+                    height: size + 6,
+                    borderRadius: (size + 6) / 2,
+                    borderWidth: 2,
+                    borderColor: color,
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Text style={{ color, fontWeight: "700", fontSize: 12 }}>{label}</Text>
+                </View>
+              );
+            },
+          })}
         >
           <Tab.Screen name="Sessions" component={SessionsStack} />
           <Tab.Screen name="WorkoutsDDBB" component={WorkoutsDbScreen} />
