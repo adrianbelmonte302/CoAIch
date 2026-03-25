@@ -583,7 +583,7 @@ function SessionListScreen({ navigation, route }: any) {
   const [jumpDate, setJumpDate] = useState("");
   const [filteredDate, setFilteredDate] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
-  const [showCalendar, setShowCalendar] = useState(true);
+  const [showCalendar, setShowCalendar] = useState(false);
   const [selectedMonthKey, setSelectedMonthKey] = useState("all");
   const today = new Date();
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
