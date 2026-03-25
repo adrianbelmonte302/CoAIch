@@ -1,9 +1,10 @@
 import uuid
 
 from sqlalchemy import Column, String, Text
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.base import Base
+from app.db.types import JSONBCompat
 
 
 class WorkoutDefinition(Base):
@@ -15,4 +16,4 @@ class WorkoutDefinition(Base):
     description = Column(Text, nullable=True)
     workout_type = Column(String, nullable=True)
     source = Column(String, nullable=True)
-    metadata_json = Column("metadata", JSONB, nullable=True)
+    metadata_json = Column("metadata", JSONBCompat, nullable=True)

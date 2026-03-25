@@ -1,9 +1,10 @@
 import uuid
 
 from sqlalchemy import Column, Integer, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import UUID
 
 from app.db.base import Base
+from app.db.types import JSONBCompat
 
 
 class Competition(Base):
@@ -13,4 +14,4 @@ class Competition(Base):
     name = Column(String, nullable=False)
     season_year = Column(Integer, nullable=True)
     organizer = Column(String, nullable=True)
-    metadata_json = Column("metadata", JSONB, nullable=True)
+    metadata_json = Column("metadata", JSONBCompat, nullable=True)

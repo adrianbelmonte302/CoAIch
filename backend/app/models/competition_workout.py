@@ -1,10 +1,11 @@
 import uuid
 
 from sqlalchemy import Column, ForeignKey, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+from app.db.types import JSONBCompat
 
 
 class CompetitionWorkout(Base):
@@ -14,7 +15,7 @@ class CompetitionWorkout(Base):
     competition_id = Column(UUID(as_uuid=True), ForeignKey("competitions.id"), nullable=False)
     workout_definition_id = Column(UUID(as_uuid=True), ForeignKey("workout_definitions.id"), nullable=True)
     label = Column(String, nullable=True)
-    metadata_json = Column("metadata", JSONB, nullable=True)
+    metadata_json = Column("metadata", JSONBCompat, nullable=True)
 
     competition = relationship("Competition", backref="workouts")
     workout_definition = relationship("WorkoutDefinition", backref="competition_instances")

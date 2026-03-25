@@ -9,10 +9,11 @@ from sqlalchemy import (
     String,
     Text,
 )
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+from app.db.types import JSONBCompat
 
 
 class Session(Base):
@@ -28,7 +29,7 @@ class Session(Base):
     deload_week = Column(Boolean, nullable=True, default=False)
     data_status = Column(String, nullable=True, default="complete")
     estimated_duration_min = Column(Integer, nullable=True)
-    session_tags = Column(JSONB, nullable=True)
+    session_tags = Column(JSONBCompat, nullable=True)
     source_ref_file = Column(String, nullable=True)
     source_hash = Column(String, nullable=True)
 

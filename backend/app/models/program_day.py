@@ -2,10 +2,11 @@ import uuid
 from datetime import date
 
 from sqlalchemy import Boolean, Column, Date, ForeignKey, String
-from sqlalchemy.dialects.postgresql import JSONB, UUID
+from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
 
 from app.db.base import Base
+from app.db.types import JSONBCompat
 
 
 class ProgramDay(Base):
@@ -22,17 +23,17 @@ class ProgramDay(Base):
     deload_week = Column(Boolean, nullable=True, default=False)
     program_source = Column(String, nullable=True)
     athlete_ref = Column(String, nullable=True)
-    classification = Column(JSONB, nullable=True)
-    related_workout_ids = Column(JSONB, nullable=True)
-    related_competition_ids = Column(JSONB, nullable=True)
-    source_integrity = Column(JSONB, nullable=True)
-    raw_content = Column(JSONB, nullable=True)
-    session_context = Column(JSONB, nullable=True)
-    session_flow = Column(JSONB, nullable=True)
-    execution_log = Column(JSONB, nullable=True)
-    athlete_feedback = Column(JSONB, nullable=True)
-    derived_metrics = Column(JSONB, nullable=True)
-    ai_annotations = Column(JSONB, nullable=True)
+    classification = Column(JSONBCompat, nullable=True)
+    related_workout_ids = Column(JSONBCompat, nullable=True)
+    related_competition_ids = Column(JSONBCompat, nullable=True)
+    source_integrity = Column(JSONBCompat, nullable=True)
+    raw_content = Column(JSONBCompat, nullable=True)
+    session_context = Column(JSONBCompat, nullable=True)
+    session_flow = Column(JSONBCompat, nullable=True)
+    execution_log = Column(JSONBCompat, nullable=True)
+    athlete_feedback = Column(JSONBCompat, nullable=True)
+    derived_metrics = Column(JSONBCompat, nullable=True)
+    ai_annotations = Column(JSONBCompat, nullable=True)
     schema_version = Column(String, nullable=True)
     entity_type = Column(String, nullable=True)
     source_hash = Column(String, nullable=True)
