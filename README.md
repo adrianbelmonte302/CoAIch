@@ -244,6 +244,13 @@ cd ~/CoAIch
 sudo ./scripts/stop_app.sh
 ```
 
+**Gestion de base de datos (backup / restore / limpieza)**
+```
+cd ~/CoAIch
+./scripts/db_manage.sh
+```
+El script crea backups en `./backups/<fecha_hora>/` y antes de limpiar hace un backup automático.
+
 **Chequeo completo del sistema (servicios + API + web)**
 ```
 cd ~/CoAIch

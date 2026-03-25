@@ -14,5 +14,6 @@ chmod +x "${SCRIPT_DIR}/stop_app.sh" || true
 chmod +x "${SCRIPT_DIR}/uninstall_vps.sh" || true
 chmod +x "${SCRIPT_DIR}/check_system.sh" || true
 chmod +x "${SCRIPT_DIR}/make_executable.sh" || true
+chmod +x "${SCRIPT_DIR}/db_manage.sh" || true
 
 echo "Permisos de ejecucion aplicados en scripts/"

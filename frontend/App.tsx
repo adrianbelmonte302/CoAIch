@@ -507,11 +507,11 @@ function CalendarPicker({
   const cells = buildMonthDays(year, monthIndex);
   const weekDays = ["L", "M", "X", "J", "V", "S", "D"];
   const isCompact = size === "compact";
-  const cellHeight = isCompact ? 30 : 36;
-  const circleSize = isCompact ? 22 : 28;
-  const headerFont = isCompact ? 16 : 18;
-  const weekDayFont = isCompact ? 11 : 12;
-  const dayFont = isCompact ? 12 : 14;
+  const cellHeight = isCompact ? 26 : 36;
+  const circleSize = isCompact ? 20 : 28;
+  const headerFont = isCompact ? 14 : 18;
+  const weekDayFont = isCompact ? 10 : 12;
+  const dayFont = isCompact ? 11 : 14;
   return (
     <View style={{ width: "100%", marginBottom: isCompact ? 8 : 12 }}>
       <View style={{ flexDirection: "row", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
@@ -869,6 +869,9 @@ function SessionListScreen({ navigation, route }: any) {
           const session = item.session as DisplayDay;
           const displayTitle = session.title || formatDayLabel(session);
           const displaySubtitle = session.title ? formatDayLabel(session) : "Sesión del día";
+          const sessionTypes = getProgramDayTypes(session.raw as ProgramDaySummary).filter(
+            (t) => !(session.is_rest_day && t === "rest")
+          );
           return (
             <TouchableOpacity
               style={{
@@ -889,7 +892,7 @@ function SessionListScreen({ navigation, route }: any) {
               <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
                 {session.is_rest_day && <Badge label="Rest" />}
                 {session.deload_week && <Badge label="Deload" />}
-                {getProgramDayTypes(session.raw as ProgramDaySummary).map((t) => (
+                {sessionTypes.map((t) => (
                   <Badge key={t} label={formatTypeLabel(t)} />
                 ))}
                 {session.tags.map((tag) => (
@@ -1050,6 +1053,9 @@ function CalendarViewScreen() {
               const displayTitle = (detail as ProgramDayDetail).display_title || "Programa del día";
               const durationValue = (detail as ProgramDayDetail).session_context?.estimated_duration_min;
               const tags = (detail as ProgramDayDetail).session_context?.tags || [];
+              const detailTypes = getProgramDayTypes(detail as ProgramDayDetail).filter(
+                (t) => !((detail as ProgramDayDetail).is_rest_day && t === "rest")
+              );
               return (
                 <View
                   key={session.id}
@@ -1072,7 +1078,7 @@ function CalendarViewScreen() {
                     {displayTitle}
                   </Text>
                   <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
-                    {getProgramDayTypes(detail as ProgramDayDetail).map((t) => (
+                    {detailTypes.map((t) => (
                       <Badge key={t} label={formatTypeLabel(t)} />
                     ))}
                     {tags.map((tag: string) => (
@@ -1176,6 +1182,11 @@ function SessionDetailScreen({ route }: any) {
         ))}
         {programDay.is_rest_day && <Badge label="Descanso" />}
         {programDay.deload_week && <Badge label="Deload" />}
+        {getProgramDayTypes(programDay)
+          .filter((t) => !(programDay.is_rest_day && t === "rest"))
+          .map((t) => (
+            <Badge key={t} label={formatTypeLabel(t)} />
+          ))}
       </View>
       <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
         Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
