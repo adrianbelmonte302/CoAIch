@@ -148,7 +148,7 @@ class SessionContextSchema(StrictBase):
 
 
 class ProgramDayImportSchema(StrictBase):
-    schema_version: str = Field(..., pattern=r"^2\\.")
+    schema_version: str = Field(..., pattern=r"^2\.")
     entity_type: str = Field(..., pattern=r"^program_day$")
     day_id: str
     date: str

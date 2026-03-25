@@ -34,5 +34,11 @@ class Session(Base):
     source_hash = Column(String, nullable=True)
 
     raw_import = relationship("RawImport", back_populates="sessions")
-    warmup = relationship("Warmup", back_populates="session", uselist=False)
+    warmup = relationship(
+        "Warmup",
+        back_populates="session",
+        uselist=False,
+        cascade="all, delete-orphan",
+        single_parent=True,
+    )
     blocks = relationship("SessionBlock", back_populates="session", cascade="all, delete-orphan")
