@@ -87,3 +87,87 @@
 | `raw_origin_text` | text | Texto original usado para esta interpretación. |
 
 Aunque hoy no usemos todos los campos, se deja el esquema listo para análisis, nutrición o recomendaciones futuras. Todas las relaciones están configuradas para preservar trazabilidad hacia el JSON fuente.
+
+---
+
+## 7. `program_days` (nuevo canon calendario)
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `id` | UUID | PK. |
+| `raw_import_id` | UUID | FK a `raw_imports`. |
+| `day_id` | text | Identificador lógico del día (YYYY-MM-DD). |
+| `date` | date | Fecha del calendario. |
+| `weekday` | text | Día en palabras. |
+| `display_title` | text | Título visible para la UI. |
+| `is_rest_day` | boolean | Descanso explícito. |
+| `day_type` | text | `training`, `rest`, etc. |
+| `deload_week` | boolean | Semana de descarga. |
+| `program_source` | text | `truecoach`, `legacy_sessions`, etc. |
+| `athlete_ref` | text | Identificador de atleta (opcional). |
+| `classification` | jsonb | Modalidades, patrones, energy systems. |
+| `related_workout_ids` | jsonb | Vínculos a workouts reutilizables. |
+| `related_competition_ids` | jsonb | Vínculos a competiciones. |
+| `source_integrity` | jsonb | Señales de completitud y confianza. |
+| `raw_content` | jsonb | Texto literal de origen. |
+| `session_context` | jsonb | Tags, duración, estímulo. |
+| `session_flow` | jsonb | Variantes, bloques, sub-bloques, ejercicios. |
+| `execution_log` | jsonb | Futuro: ejecución del atleta. |
+| `athlete_feedback` | jsonb | Futuro: feedback y dolor. |
+| `derived_metrics` | jsonb | Futuro: métricas agregadas. |
+| `ai_annotations` | jsonb | Futuro: anotaciones IA. |
+| `schema_version` | text | `2.0.0` u otras. |
+| `entity_type` | text | `program_day`. |
+| `source_hash` | text | Hash del payload completo para dedupe. |
+
+## 8. `workout_definitions`
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `id` | UUID | PK. |
+| `name` | text | Nombre del benchmark o workout. |
+| `slug` | text | Slug normalizado. |
+| `description` | text | Descripción libre. |
+| `workout_type` | text | `benchmark`, `event`, etc. |
+| `source` | text | `crossfit_open`, `wodbuster`, etc. |
+| `metadata` | jsonb | Campos futuros. |
+
+## 9. `competitions`
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `id` | UUID | PK. |
+| `name` | text | Nombre del evento. |
+| `season_year` | int | Año o temporada. |
+| `organizer` | text | Organizador. |
+| `metadata` | jsonb | Campos futuros. |
+
+## 10. `competition_workouts`
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `id` | UUID | PK. |
+| `competition_id` | UUID | FK a `competitions`. |
+| `workout_definition_id` | UUID | FK a `workout_definitions`. |
+| `label` | text | Etiqueta del WOD (`Open 26.1`, etc.). |
+| `metadata` | jsonb | Campos futuros. |
+
+## 11. `competition_results`
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `id` | UUID | PK. |
+| `competition_workout_id` | UUID | FK a `competition_workouts`. |
+| `athlete_ref` | text | Atleta. |
+| `result` | jsonb | Score, time, notes. |
+| `created_at` | timestamptz | Timestamp. |
+
+## 12. `athlete_executions`
+
+| Campo | Tipo | Notas |
+| --- | --- | --- |
+| `id` | UUID | PK. |
+| `program_day_id` | UUID | FK a `program_days`. |
+| `athlete_ref` | text | Atleta. |
+| `data` | jsonb | RPE, pesos, score, notas. |
+| `created_at` | timestamptz | Timestamp. |

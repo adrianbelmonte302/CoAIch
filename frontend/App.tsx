@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+﻿import React, { createContext, useContext, useEffect, useState } from "react";
 import {
   ActivityIndicator,
   FlatList,
@@ -81,6 +81,53 @@ type SessionDetail = SessionSummary & {
       execution_notes?: string;
     }>;
   }>;
+};
+
+type ProgramDaySummary = {
+  id: string;
+  day_id: string;
+  date?: string;
+  weekday?: string;
+  display_title?: string;
+  is_rest_day?: boolean;
+  deload_week?: boolean;
+  day_type?: string;
+  program_source?: string;
+  athlete_ref?: string;
+  session_context?: {
+    tags?: string[];
+    estimated_duration_min?: number | null;
+    priority?: string | null;
+  };
+};
+
+type ProgramDayDetail = ProgramDaySummary & {
+  schema_version?: string;
+  entity_type?: string;
+  classification?: Record<string, unknown> | null;
+  related_workout_ids?: string[] | null;
+  related_competition_ids?: string[] | null;
+  source_integrity?: Record<string, unknown> | null;
+  raw_content?: Record<string, unknown> | null;
+  session_flow?: Record<string, any> | null;
+  execution_log?: Record<string, unknown> | null;
+  athlete_feedback?: Record<string, unknown> | null;
+  derived_metrics?: Record<string, unknown> | null;
+  ai_annotations?: Record<string, unknown> | null;
+};
+
+type DisplayDay = {
+  kind: "session" | "program_day";
+  id: string;
+  date?: string;
+  weekday?: string;
+  title?: string;
+  is_rest_day?: boolean;
+  deload_week?: boolean;
+  tags: string[];
+  estimated_duration_min?: number | null;
+  data_status?: string;
+  raw: SessionSummary | ProgramDaySummary;
 };
 
 const Stack = createNativeStackNavigator();
@@ -212,6 +259,28 @@ function renderMultiline(text?: string) {
   ));
 }
 
+function extractText(value?: any): string | null {
+  if (!value) return null;
+  if (typeof value === "string") return value;
+  const parts: string[] = [];
+  ["raw_text", "text", "description", "mobility", "activation", "quote", "literal_day_text"].forEach(
+    (key) => {
+      const entry = value?.[key];
+      if (typeof entry === "string" && entry.trim()) {
+        parts.push(entry.trim());
+      }
+    }
+  );
+  if (parts.length) return parts.join("\n");
+  return null;
+}
+
+function renderTextBlock(value?: any) {
+  const text = extractText(value);
+  if (!text) return null;
+  return renderMultiline(text);
+}
+
 
 function getWeekdayFromDate(dateStr?: string): string {
   if (!dateStr) return "";
@@ -258,7 +327,83 @@ function getSessionTypes(session: SessionSummary & { blocks?: SessionDetail["blo
   return Array.from(types);
 }
 
-function formatDayLabel(session: SessionSummary): string {
+function getProgramDayTypes(programDay: ProgramDaySummary | ProgramDayDetail): string[] {
+  const types = new Set<string>();
+  if (programDay.is_rest_day) types.add("rest");
+  (programDay.session_context?.tags || []).forEach((tag) =>
+    detectTypesFromText(normalizeBlockText(tag), types)
+  );
+  detectTypesFromText(normalizeBlockText(programDay.display_title || ""), types);
+
+  const flow = (programDay as ProgramDayDetail).session_flow as any;
+  const variants = flow?.variants || [];
+  variants.forEach((variant: any) => {
+    detectTypesFromText(normalizeBlockText(variant?.title || ""), types);
+    (variant?.blocks || []).forEach((block: any) => {
+      detectTypesFromText(normalizeBlockText(block?.title || ""), types);
+      detectTypesFromText(normalizeBlockText(block?.block_type || ""), types);
+      detectTypesFromText(normalizeBlockText(block?.prescription?.format || ""), types);
+      (block?.prescription?.sub_blocks || []).forEach((sub: any) => {
+        detectTypesFromText(normalizeBlockText(sub?.title || ""), types);
+        detectTypesFromText(normalizeBlockText(sub?.format || ""), types);
+        (sub?.exercises || []).forEach((exercise: any) => {
+          detectTypesFromText(normalizeBlockText(exercise?.name || ""), types);
+        });
+      });
+    });
+  });
+
+  return Array.from(types);
+}
+
+function getProgramDayBlockTitles(programDay: ProgramDaySummary | ProgramDayDetail): string[] {
+  const flow = (programDay as ProgramDayDetail).session_flow as any;
+  if (!flow) return [];
+  const titles: string[] = [];
+  const sharedBlocks = flow.shared_blocks || [];
+  sharedBlocks.forEach((block: any) => {
+    if (block?.title) titles.push(block.title);
+  });
+  (flow.variants || []).forEach((variant: any) => {
+    (variant?.blocks || []).forEach((block: any) => {
+      titles.push(block?.title || block?.block_id || "Bloque");
+    });
+  });
+  return titles;
+}
+
+function toDisplayDayFromSession(session: SessionSummary): DisplayDay {
+  return {
+    kind: "session",
+    id: session.id,
+    date: session.date,
+    weekday: session.weekday,
+    title: session.title,
+    is_rest_day: session.is_rest_day,
+    deload_week: session.deload_week,
+    tags: session.session_tags || [],
+    estimated_duration_min: session.estimated_duration_min,
+    data_status: session.data_status,
+    raw: session,
+  };
+}
+
+function toDisplayDayFromProgramDay(programDay: ProgramDaySummary): DisplayDay {
+  return {
+    kind: "program_day",
+    id: programDay.id,
+    date: programDay.date,
+    weekday: programDay.weekday,
+    title: programDay.display_title || "Programa del día",
+    is_rest_day: programDay.is_rest_day,
+    deload_week: programDay.deload_week,
+    tags: programDay.session_context?.tags || [],
+    estimated_duration_min: programDay.session_context?.estimated_duration_min ?? null,
+    raw: programDay,
+  };
+}
+
+function formatDayLabel(session: { date?: string; weekday?: string }): string {
   if (!session.date) return "Fecha sin definir";
   const parts: string[] = [];
   const weekday = session.weekday || getWeekdayFromDate(session.date);
@@ -270,7 +415,7 @@ function formatDayLabel(session: SessionSummary): string {
 type ListRow =
   | { type: "month"; key: string; label: string }
   | { type: "day"; key: string; label: string }
-  | { type: "session"; key: string; session: SessionSummary };
+  | { type: "session"; key: string; session: DisplayDay };
 
 
 function getMonthLabel(year: number, monthIndex: number): string {
@@ -388,6 +533,8 @@ function CalendarPicker({
 
 function SessionListScreen({ navigation, route }: any) {
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
+  const [programDays, setProgramDays] = useState<ProgramDaySummary[]>([]);
+  const [dataSource, setDataSource] = useState<"session" | "program_day">("session");
   const [loading, setLoading] = useState(true);
   const [jumpDate, setJumpDate] = useState("");
   const [filteredDate, setFilteredDate] = useState("");
@@ -416,18 +563,45 @@ function SessionListScreen({ navigation, route }: any) {
     if (!basicAuth) {
       return;
     }
-    setLoading(true);
-    fetch(`${API_BASE}/sessions/`, {
-      headers: { Authorization: basicAuth },
-    })
-      .then((res) => {
+    let active = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const programRes = await fetch(`${API_BASE}/program-days/`, {
+          headers: { Authorization: basicAuth },
+        });
+        if (programRes.ok) {
+          const data = await programRes.json();
+          if (Array.isArray(data) && data.length > 0) {
+            if (!active) return;
+            setProgramDays(data);
+            setDataSource("program_day");
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        // ignore program-day errors and fallback to sessions
+      }
+      try {
+        const res = await fetch(`${API_BASE}/sessions/`, {
+          headers: { Authorization: basicAuth },
+        });
         if (!res.ok) {
           throw new Error(`API error: ${res.status}`);
         }
-        return res.json();
-      })
-      .then((data) => setSessions(data))
-      .finally(() => setLoading(false));
+        const data = await res.json();
+        if (!active) return;
+        setSessions(data);
+        setDataSource("session");
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      active = false;
+    };
   }, [basicAuth]);
 
   if (loading) {
@@ -439,13 +613,21 @@ function SessionListScreen({ navigation, route }: any) {
     );
   }
 
+  const displayDays =
+    dataSource === "program_day"
+      ? programDays.map(toDisplayDayFromProgramDay)
+      : sessions.map(toDisplayDayFromSession);
+
   const filteredByDate = filteredDate
-    ? sessions.filter((s) => s.date === filteredDate)
-    : sessions;
+    ? displayDays.filter((s) => s.date === filteredDate)
+    : displayDays;
 
   const effectiveSessions = selectedTypes.length
     ? filteredByDate.filter((s) => {
-        const types = getSessionTypes(s as SessionSummary & { blocks?: SessionDetail["blocks"] });
+        const types =
+          s.kind === "program_day"
+            ? getProgramDayTypes(s.raw as ProgramDaySummary)
+            : getSessionTypes(s.raw as SessionSummary & { blocks?: SessionDetail["blocks"] });
         return types.some((t) => selectedTypes.includes(t));
       })
     : filteredByDate;
@@ -511,7 +693,7 @@ function SessionListScreen({ navigation, route }: any) {
         <CalendarPicker
           year={calendarYear}
           monthIndex={calendarMonth}
-          datesWithSessions={new Set(sessions.map((s) => s.date).filter(Boolean) as string[])}
+          datesWithSessions={new Set(displayDays.map((s) => s.date).filter(Boolean) as string[])}
           selectedDate={filteredDate}
           onSelectDate={(date) => {
             setFilteredDate(date);
@@ -564,7 +746,7 @@ function SessionListScreen({ navigation, route }: any) {
               </Text>
             );
           }
-          const session = item.session;
+          const session = item.session as DisplayDay;
           const displayTitle = session.title || formatDayLabel(session);
           const displaySubtitle = session.title ? formatDayLabel(session) : "Sesión del día";
           return (
@@ -580,7 +762,7 @@ function SessionListScreen({ navigation, route }: any) {
                 elevation: 3,
                 alignItems: "center",
               }}
-              onPress={() => navigation.push("Detail", { sessionId: session.id })}
+              onPress={() => navigation.push("Detail", { sessionId: session.id, kind: session.kind })}
             >
               <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>{displayTitle}</Text>
               <Text style={{ color: "#666", marginTop: 4, textAlign: "center" }}>{displaySubtitle}</Text>
@@ -588,10 +770,13 @@ function SessionListScreen({ navigation, route }: any) {
                 {session.is_rest_day && <Badge label="Rest" />}
                 {session.deload_week && <Badge label="Deload" />}
                 {session.data_status === "external_reference" && <Badge label="External" />}
-                {getSessionTypes(session as SessionSummary & { blocks?: SessionDetail["blocks"] }).map((t) => (
+                {(session.kind === "program_day"
+                  ? getProgramDayTypes(session.raw as ProgramDaySummary)
+                  : getSessionTypes(session.raw as SessionSummary & { blocks?: SessionDetail["blocks"] })
+                ).map((t) => (
                   <Badge key={t} label={t} />
                 ))}
-                {session.session_tags?.map((tag) => (
+                {session.tags.map((tag) => (
                   <Badge key={tag} label={tag} />
                 ))}
               </View>
@@ -644,7 +829,9 @@ function CoachScreen() {
 function CalendarViewScreen() {
   const { basicAuth } = useContext(AuthContext);
   const [sessions, setSessions] = useState<SessionSummary[]>([]);
-  const [detailedSessions, setDetailedSessions] = useState<Record<string, SessionDetail>>({});
+  const [programDays, setProgramDays] = useState<ProgramDaySummary[]>([]);
+  const [dataSource, setDataSource] = useState<"session" | "program_day">("session");
+  const [detailCache, setDetailCache] = useState<Record<string, SessionDetail | ProgramDayDetail>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState("");
   const today = new Date();
@@ -653,29 +840,67 @@ function CalendarViewScreen() {
 
   useEffect(() => {
     if (!basicAuth) return;
-    setLoading(true);
-    fetch(`${API_BASE}/sessions/`, { headers: { Authorization: basicAuth } })
-      .then((res) => {
+    let active = true;
+    async function load() {
+      setLoading(true);
+      try {
+        const programRes = await fetch(`${API_BASE}/program-days/`, {
+          headers: { Authorization: basicAuth },
+        });
+        if (programRes.ok) {
+          const data = await programRes.json();
+          if (Array.isArray(data) && data.length > 0) {
+            if (!active) return;
+            setProgramDays(data);
+            setDataSource("program_day");
+            if (!selectedDate && data.length > 0) {
+              setSelectedDate(data[0].date || "");
+            }
+            setLoading(false);
+            return;
+          }
+        }
+      } catch (err) {
+        // ignore and fallback to sessions
+      }
+
+      try {
+        const res = await fetch(`${API_BASE}/sessions/`, {
+          headers: { Authorization: basicAuth },
+        });
         if (!res.ok) throw new Error(`API error: ${res.status}`);
-        return res.json();
-      })
-      .then((data) => {
+        const data = await res.json();
+        if (!active) return;
         setSessions(data);
+        setDataSource("session");
         if (!selectedDate && data.length > 0) {
           setSelectedDate(data[0].date || "");
         }
-      })
-      .finally(() => setLoading(false));
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+    load();
+    return () => {
+      active = false;
+    };
   }, [basicAuth]);
 
 
   async function fetchDetailsForDate(date: string) {
-    const targets = sessions.filter((s) => s.date === date);
+    const targets =
+      dataSource === "program_day"
+        ? programDays.filter((s) => s.date === date)
+        : sessions.filter((s) => s.date === date);
     if (targets.length === 0) return;
     const entries = await Promise.all(
       targets.map(async (s) => {
         try {
-          const res = await fetch(`${API_BASE}/sessions/${s.id}`, {
+          const endpoint =
+            dataSource === "program_day"
+              ? `${API_BASE}/program-days/${s.id}`
+              : `${API_BASE}/sessions/${s.id}`;
+          const res = await fetch(endpoint, {
             headers: { Authorization: basicAuth },
           });
           if (!res.ok) return [s.id, null] as const;
@@ -686,21 +911,25 @@ function CalendarViewScreen() {
         }
       })
     );
-    const next = { ...detailedSessions };
+    const next = { ...detailCache };
     entries.forEach(([id, data]) => {
-      if (data) next[String(id)] = data as SessionDetail;
+      if (data) next[String(id)] = data as SessionDetail | ProgramDayDetail;
     });
-    setDetailedSessions(next);
+    setDetailCache(next);
   }
 
   useEffect(() => {
     if (!basicAuth || !selectedDate) return;
     fetchDetailsForDate(selectedDate);
-  }, [basicAuth, selectedDate, sessions.length]);
+  }, [basicAuth, selectedDate, sessions.length, programDays.length, dataSource]);
 
-  const datesWithSessions = new Set(sessions.map((s) => s.date).filter(Boolean) as string[]);
+  const displayDays =
+    dataSource === "program_day"
+      ? programDays.map(toDisplayDayFromProgramDay)
+      : sessions.map(toDisplayDayFromSession);
+  const datesWithSessions = new Set(displayDays.map((s) => s.date).filter(Boolean) as string[]);
   const sessionsForDate = selectedDate
-    ? sessions.filter((s) => s.date === selectedDate)
+    ? displayDays.filter((s) => s.date === selectedDate)
     : [];
 
   if (loading) {
@@ -732,7 +961,17 @@ function CalendarViewScreen() {
         {selectedDate ? (
           sessionsForDate.length > 0 ? (
             sessionsForDate.map((session) => {
-              const detail = detailedSessions[session.id] || session;
+              const detail = detailCache[session.id] || session.raw;
+              const isProgramDay = session.kind === "program_day";
+              const displayTitle = isProgramDay
+                ? (detail as ProgramDayDetail).display_title || "Programa del día"
+                : (detail as SessionDetail).title || "Sesión del día";
+              const durationValue = isProgramDay
+                ? (detail as ProgramDayDetail).session_context?.estimated_duration_min
+                : (detail as SessionDetail).estimated_duration_min;
+              const tags = isProgramDay
+                ? (detail as ProgramDayDetail).session_context?.tags || []
+                : (detail as SessionDetail).session_tags || [];
               return (
                 <View
                   key={session.id}
@@ -749,36 +988,58 @@ function CalendarViewScreen() {
                   }}
                 >
                   <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
-                    {formatDayLabel(detail)}
+                    {formatDayLabel(detail as { date?: string; weekday?: string })}
                   </Text>
                   <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center", marginTop: 4 }}>
-                    {detail.title || "Sesión del día"}
+                    {displayTitle}
                   </Text>
                   <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
-                    {getSessionTypes(detail as SessionSummary & { blocks?: SessionDetail["blocks"] }).map((t) => (
+                    {(isProgramDay
+                      ? getProgramDayTypes(detail as ProgramDayDetail)
+                      : getSessionTypes(detail as SessionSummary & { blocks?: SessionDetail["blocks"] })
+                    ).map((t) => (
                       <Badge key={t} label={t} />
                     ))}
-                    {detail.session_tags?.map((tag) => (
+                    {tags.map((tag: string) => (
                       <Badge key={tag} label={tag} />
                     ))}
                   </View>
                   <Text style={{ marginTop: 8, color: "#333", textAlign: "center" }}>
-                    Duración estimada: {formatDuration(detail.estimated_duration_min)} min
+                    Duración estimada: {formatDuration(durationValue)} min
                   </Text>
-                  {detail.blocks && detail.blocks.length > 0 && (
-                    <View style={{ marginTop: 12 }}>
-                      <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
-                        Bloques
-                      </Text>
-                      {detail.blocks.map((block) => (
-                        <Text
-                          key={block.id}
-                          style={{ marginTop: 4, textAlign: "center", color: "#444" }}
-                        >
-                          {block.title || "Bloque"}
+                  {isProgramDay ? (
+                    getProgramDayBlockTitles(detail as ProgramDayDetail).length > 0 && (
+                      <View style={{ marginTop: 12 }}>
+                        <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+                          Bloques
                         </Text>
-                      ))}
-                    </View>
+                        {getProgramDayBlockTitles(detail as ProgramDayDetail).map((title, idx) => (
+                          <Text
+                            key={`${session.id}-block-${idx}`}
+                            style={{ marginTop: 4, textAlign: "center", color: "#444" }}
+                          >
+                            {title}
+                          </Text>
+                        ))}
+                      </View>
+                    )
+                  ) : (
+                    (detail as SessionDetail).blocks &&
+                    (detail as SessionDetail).blocks!.length > 0 && (
+                      <View style={{ marginTop: 12 }}>
+                        <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+                          Bloques
+                        </Text>
+                        {(detail as SessionDetail).blocks!.map((block) => (
+                          <Text
+                            key={block.id}
+                            style={{ marginTop: 4, textAlign: "center", color: "#444" }}
+                          >
+                            {block.title || "Bloque"}
+                          </Text>
+                        ))}
+                      </View>
+                    )
                   )}
                 </View>
               );
@@ -799,8 +1060,11 @@ function CalendarViewScreen() {
 }
 
 function SessionDetailScreen({ route }: any) {
-  const { sessionId } = route.params;
-  const [session, setSession] = useState<SessionDetail | null>(null);
+  const { sessionId, kind } = route.params;
+  const [detail, setDetail] = useState<SessionDetail | ProgramDayDetail | null>(null);
+  const [resolvedKind, setResolvedKind] = useState<"session" | "program_day">(
+    kind === "program_day" ? "program_day" : "session"
+  );
   const [loading, setLoading] = useState(true);
   const { basicAuth } = useContext(AuthContext);
 
@@ -808,21 +1072,43 @@ function SessionDetailScreen({ route }: any) {
     if (!basicAuth) {
       return;
     }
-    setLoading(true);
-    fetch(`${API_BASE}/sessions/${sessionId}`, {
-      headers: { Authorization: basicAuth },
-    })
-      .then((res) => {
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
+    let active = true;
+    async function load() {
+      setLoading(true);
+      const primary = kind === "program_day" ? "program_day" : "session";
+      const attempts =
+        primary === "program_day"
+          ? [
+              { url: `${API_BASE}/program-days/${sessionId}`, kind: "program_day" as const },
+              { url: `${API_BASE}/sessions/${sessionId}`, kind: "session" as const },
+            ]
+          : [
+              { url: `${API_BASE}/sessions/${sessionId}`, kind: "session" as const },
+              { url: `${API_BASE}/program-days/${sessionId}?include_legacy=1`, kind: "program_day" as const },
+            ];
+      for (const attempt of attempts) {
+        try {
+          const res = await fetch(attempt.url, { headers: { Authorization: basicAuth } });
+          if (!res.ok) continue;
+          const data = await res.json();
+          if (!active) return;
+          setDetail(data);
+          setResolvedKind(attempt.kind);
+          setLoading(false);
+          return;
+        } catch (err) {
+          // try next endpoint
         }
-        return res.json();
-      })
-      .then((data) => setSession(data))
-      .finally(() => setLoading(false));
-  }, [sessionId, basicAuth]);
+      }
+      if (active) setLoading(false);
+    }
+    load();
+    return () => {
+      active = false;
+    };
+  }, [sessionId, basicAuth, kind]);
 
-  if (loading || !session) {
+  if (loading || !detail) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <ActivityIndicator />
@@ -831,6 +1117,121 @@ function SessionDetailScreen({ route }: any) {
     );
   }
 
+  if (resolvedKind === "program_day") {
+    const programDay = detail as ProgramDayDetail;
+    const detailTitleParts: string[] = [];
+    if (programDay.weekday) detailTitleParts.push(programDay.weekday);
+    if (programDay.date) detailTitleParts.push(programDay.date);
+    if (programDay.display_title) detailTitleParts.push(programDay.display_title);
+    const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Programa del día";
+    const sessionFlow = programDay.session_flow as any;
+    const variants = sessionFlow?.variants || [];
+    const sharedBlocks = sessionFlow?.shared_blocks || [];
+
+    return (
+      <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
+        <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{detailTitle}</Text>
+        <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center", flexWrap: "wrap" }}>
+          {(programDay.session_context?.tags || []).map((tag) => (
+            <Badge key={tag} label={tag} />
+          ))}
+          {programDay.is_rest_day && <Badge label="Descanso" />}
+          {programDay.deload_week && <Badge label="Deload" />}
+        </View>
+        <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
+          Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
+        </Text>
+
+        {sessionFlow?.general_warmup && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
+            {renderTextBlock(sessionFlow.general_warmup)}
+          </View>
+        )}
+
+        {variants.map((variant: any, idx: number) => (
+          <View key={`variant-${idx}`} style={{ marginTop: 16 }}>
+            <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+              Variante {variant?.variant_id || idx + 1}
+            </Text>
+            {variant?.title && (
+              <Text style={{ marginTop: 4, textAlign: "center", color: "#444" }}>{variant.title}</Text>
+            )}
+            {variant?.warmup && renderTextBlock(variant.warmup)}
+            {(variant?.blocks || []).map((block: any, bIdx: number) => (
+              <View
+                key={`variant-${idx}-block-${bIdx}`}
+                style={{
+                  marginTop: 12,
+                  padding: 16,
+                  backgroundColor: "white",
+                  borderRadius: 12,
+                  shadowColor: "#000",
+                  shadowOpacity: 0.05,
+                  shadowRadius: 6,
+                  elevation: 2,
+                }}
+              >
+                <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>
+                  {block?.title || `Bloque ${bIdx + 1}`}
+                </Text>
+                {block?.block_type && (
+                  <Text style={{ color: "#888", marginTop: 2, textAlign: "center" }}>
+                    {block.block_type}
+                  </Text>
+                )}
+                {block?.coach_notes_literal && (
+                  <Text style={{ marginTop: 4, fontStyle: "italic", color: "#444", textAlign: "center" }}>
+                    {block.coach_notes_literal}
+                  </Text>
+                )}
+                {(block?.prescription?.sub_blocks || []).map((sub: any, sIdx: number) => (
+                  <View key={`sub-${sIdx}`} style={{ marginTop: 8 }}>
+                    <Text style={{ fontWeight: "600", textAlign: "center" }}>
+                      {sub?.title || `Sub-bloque ${sIdx + 1}`}
+                    </Text>
+                    {sub?.format && (
+                      <Text style={{ color: "#666", textAlign: "center" }}>{sub.format}</Text>
+                    )}
+                    {renderTextBlock(sub?.description)}
+                    {(sub?.exercises || []).map((exercise: any, eIdx: number) => (
+                      <View key={`ex-${eIdx}`} style={{ marginTop: 6 }}>
+                        <Text style={{ fontWeight: "600", textAlign: "center" }}>{exercise?.name}</Text>
+                        {exercise?.format && (
+                          <Text style={{ color: "#444", textAlign: "center" }}>{exercise.format}</Text>
+                        )}
+                        {exercise?.notes && renderTextBlock(exercise.notes)}
+                      </View>
+                    ))}
+                  </View>
+                ))}
+              </View>
+            ))}
+          </View>
+        ))}
+
+        {sharedBlocks.length > 0 && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>Bloques compartidos</Text>
+            {sharedBlocks.map((block: any, bIdx: number) => (
+              <Text key={`shared-${bIdx}`} style={{ marginTop: 4, textAlign: "center", color: "#444" }}>
+                {block?.title || `Bloque ${bIdx + 1}`}
+              </Text>
+            ))}
+          </View>
+        )}
+
+        {sessionFlow?.cooldown && (
+          <View style={{ marginTop: 16 }}>
+            <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Cooldown</Text>
+            {renderTextBlock(sessionFlow.cooldown)}
+          </View>
+        )}
+      </ScrollView>
+    );
+  }
+
+  const session = detail as SessionDetail;
   const detailTitleParts: string[] = [];
   if (session.weekday) detailTitleParts.push(session.weekday);
   if (session.date) detailTitleParts.push(session.date);
@@ -840,7 +1241,7 @@ function SessionDetailScreen({ route }: any) {
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
       <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{detailTitle}</Text>
-      <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center" }}>
+      <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center", flexWrap: "wrap" }}>
         {(session.session_tags || []).map((tag) => (
           <Badge key={tag} label={tag} />
         ))}
@@ -851,24 +1252,12 @@ function SessionDetailScreen({ route }: any) {
       <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
         Duración estimada: {formatDuration(session.estimated_duration_min)} min
       </Text>
-      {detail.blocks && detail.blocks.length > 0 && (
-        <View style={{ marginTop: 12 }}>
-          <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
-            Bloques
-          </Text>
-          {detail.blocks.map((block) => (
-            <Text key={block.id} style={{ marginTop: 4, textAlign: "center", color: "#444" }}>
-              {block.title || "Bloque"}
-            </Text>
-          ))}
-        </View>
-      )}
 
       {session.warmup && (
         <View style={{ marginTop: 16 }}>
           <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
-          {renderMultiline(session.warmup.raw_text || session.warmup.mobility)}
-          {session.warmup.activation && renderMultiline(session.warmup.activation)}
+          {renderTextBlock(session.warmup.raw_text || session.warmup.mobility)}
+          {session.warmup.activation && renderTextBlock(session.warmup.activation)}
         </View>
       )}
 
@@ -905,7 +1294,7 @@ function SessionDetailScreen({ route }: any) {
           ))}
           {(block.items_canonical || []).map((item) => (
             <View key={item.id} style={{ marginTop: 8, borderTopWidth: 1, borderTopColor: "#eee", paddingTop: 8 }}>
-              <Text style={{ fontSize: 14, fontWeight: "600" }}>{item.movement_name || "Item canónico"}</Text>
+              <Text style={{ fontSize: 14, fontWeight: "600" }}>{item.movement_name || "Item canonico"}</Text>
               {item.execution_notes && <Text style={{ color: "#555" }}>{item.execution_notes}</Text>}
               {item.raw_origin_text && (
                 <Text style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{item.raw_origin_text}</Text>
@@ -923,6 +1312,7 @@ function SessionsStack() {
   return (
     <Stack.Navigator screenOptions={{ headerStyle: { backgroundColor: "#0f172a" }, headerTintColor: "#fff" }}>
       <Stack.Screen name="Sessions" component={SessionListScreen} />
+      <Stack.Screen name="Calendar" component={CalendarViewScreen} options={{ title: "Calendario" }} />
       <Stack.Screen name="Detail" component={SessionDetailScreen} options={{ title: "Detalle de sesión" }} />
     </Stack.Navigator>
   );
@@ -1086,3 +1476,5 @@ export default function App() {
     </AuthContext.Provider>
   );
 }
+
+

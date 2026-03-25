@@ -1,0 +1,126 @@
+[
+  {
+    "schema_version": "2.0.0",
+    "entity_type": "program_day",
+    "day_id": "2025-08-01",
+    "date": "2025-08-01",
+    "weekday": "Viernes",
+    "display_title": "Weightlifting & Gymnastics Conditioning",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": "training",
+      "primary_modalities": ["weightlifting", "gymnastics"],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Adrián, here's your workout for Friday, August 1",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": null
+    },
+    "session_context": {
+      "tags": ["weightlifting", "gymnastics"],
+      "estimated_duration_min": 75,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": {
+        "raw_text": "5 min ski + movilidad hombros"
+      },
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "RX",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Weightlifting",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": "EMOM",
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Clean & Jerk complex",
+                    "format": "EMOM 12'",
+                    "duration_min": 12,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "1 squat clean + 1 hang clean + 1 jerk",
+                    "exercises": [
+                      {
+                        "exercise_id": "A1.1",
+                        "name": "Clean & Jerk",
+                        "movement_category": "weightlifting",
+                        "modality": "barbell",
+                        "format": null,
+                        "set_structure": [],
+                        "equipment": [],
+                        "rx_options": null,
+                        "scaled_options": null,
+                        "intermediate_options": null,
+                        "women_options": null,
+                        "men_options": null,
+                        "alternatives": [],
+                        "standards": [],
+                        "targets": [],
+                        "score_format": null,
+                        "notes": null
+                      }
+                    ]
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": "Prioriza tecnica.",
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  }
+]

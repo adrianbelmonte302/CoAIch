@@ -60,3 +60,14 @@ La UI consume ambos modelos: los campos canónicos ofrecen orden y estructura, m
 - Posible motor de inferencia que analice `block_items_canonical.intensity_value_json`.
 
 El diseño actual garantiza que el MVP sea sólido (ingesta, persistencia y visualización fiel) pero deja la puerta abierta para exposición de métricas y análisis avanzados sin tener que reorganizar la base de datos central.
+
+## Evolución hacia Program Days (schema v2)
+
+Desde marzo 2026 el backend incorpora un **Domain Layer** nuevo con `program_days` como entidad canonica de calendario. Este modelo reemplaza gradualmente el uso directo de `sessions` (legacy), pero mantiene compatibilidad:
+
+- `program_days` almacena el JSON v2 (session_flow, variantes, bloques, sub-bloques y ejercicios) sin aplanar la estructura.
+- `workout_definitions`, `competitions`, `competition_workouts`, `competition_results` y `athlete_executions` están creados como scaffolding para benchmarks, eventos y resultados.
+- El importador detecta `entity_type=program_day` y valida con schema v2.
+- La API `GET /program-days` devuelve program days; si no existen, puede mapear legacy con `include_legacy=1`.
+
+La UI prioriza `program_days` cuando existen y cae a `sessions` cuando el pipeline v2 aún no está disponible.

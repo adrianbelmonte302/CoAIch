@@ -20,8 +20,9 @@ No perder ningun dato del coach. Todo lo importado queda guardado en la capa raw
 
 **Arquitectura**
 - Raw Layer: `raw_imports` guarda el JSON completo, versiona parser y metadatos de origen.
-- Canonical Layer: `sessions`, `warmups`, `session_blocks`, `block_exercises_raw`, `block_items_canonical`.
-- UI: consume canonical para ordenar y raw para mostrar todo lo que falte.
+- Canonical Layer (legacy): `sessions`, `warmups`, `session_blocks`, `block_exercises_raw`, `block_items_canonical`.
+- Domain Layer (nuevo): `program_days` como entidad canonica principal del calendario + scaffolding de futuro (`workout_definitions`, `competitions`, `competition_workouts`, `competition_results`, `athlete_executions`).
+- UI: consume `program_days` cuando existen; si no, usa compatibilidad con `sessions` (legacy).
 
 **Diagrama (flujo de datos)**
 ```
@@ -42,11 +43,18 @@ UI (usa canonical + fallback raw)
 
 **Modelo de datos (resumen)**
 - `raw_imports`: `source_file`, `source_month`, `raw_json`, `parser_version`, `imported_at`.
-- `sessions`: metadatos generales, tags, duracion, estado de data.
+- `sessions`: metadatos generales, tags, duracion, estado de data (legacy).
+- `program_days`: nuevo canon para calendario y schema v2 (session_flow, variants, blocks, etc.).
 - `warmups`: quote, mobility, activation, raw_text.
 - `session_blocks`: orden, tipo, raw_text, coach_notes, referencias externas.
 - `block_exercises_raw`: preserva `exercises[]` de octubre.
 - `block_items_canonical`: normalizado para futuro (movimiento, sets, reps, etc.).
+- `workout_definitions`, `competitions`, `competition_workouts`, `competition_results`, `athlete_executions`: scaffolding para benchmark, eventos y resultados futuros.
+
+**Program Day schema v2**
+- Formato canonico de importacion para TrueCoach y programacion diaria.
+- Soporta variantes, bloques, sub-bloques, ejercicios y notas de coach sin perder fidelidad.
+- Fixture de ejemplo: `docs/fixtures/program_day_sample.json`.
 
 **Reglas de importacion**
 - Siempre guardar raw antes de transformar.
@@ -135,6 +143,29 @@ python importer_cli.py --limit 10 /ruta/workouts_octubre_2025.json
 
 ---
 
+**Importacion Program Days (schema v2)**
+El importador detecta automaticamente listas con `entity_type=program_day` (schema v2).
+```
+python importer_cli.py /ruta/program_days_agosto_2025.json
+```
+
+Reescribir duplicados (mismo hash del payload):
+```
+python importer_cli.py --overwrite /ruta/program_days_agosto_2025.json
+```
+
+Solo nuevos (ignora overwrite):
+```
+python importer_cli.py --only-new /ruta/program_days_agosto_2025.json
+```
+
+Dry-run:
+```
+python importer_cli.py --dry-run /ruta/program_days_agosto_2025.json
+```
+
+---
+
 **Frontend local**
 ```
 cd frontend
@@ -164,6 +195,20 @@ sudo cp -r web-build/* /var/www/html/
 - `POST /auth/login`
 - `GET /sessions`
 - `GET /sessions/{id}`
+- `GET /program-days`
+- `GET /program-days/{id}`
+- `GET /program-days?include_legacy=1` (mapear `sessions` si no hay program_days cargados)
+
+---
+
+**Migracion a Program Days (v2)**
+1. Ejecutar migraciones nuevas:
+```
+cd backend
+alembic upgrade head
+```
+2. Importar JSON v2 (ver `docs/fixtures/program_day_sample.json`).
+3. La UI usara `program_days` cuando existan; si aun no hay, seguira mostrando `sessions` legacy.
 
 ---
 
@@ -277,11 +322,13 @@ Objetivo: MVP tipo TrueCoach para consultar entrenamientos historicos desde JSON
 Estado actual:
 - Backend FastAPI + PostgreSQL + SQLAlchemy + Alembic.
 - Importador con variantes (octubre vs nov/dec) y deteccion automatica.
+- Importador v2: detecta `program_days` (schema 2.0.0) y los guarda en `program_days` con deduplicacion por hash.
 - Deduplicacion por `source_hash` (hash del payload completo de la sesion).
 - CLI admite `--overwrite`, `--only-new`, `--dry-run`, `--limit`.
 - Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
+- Nuevos endpoints `/program-days` y `/program-days/{id}` (con compatibilidad legacy via `include_legacy=1` en el backend).
 - Frontend Expo: login, recordarme, auto logout y logout en header.
-- UI web: calendario simple (input de fecha) para filtrar por dia, y agrupacion por meses/dias en la lista.
+- UI web: calendario con dias resaltados y vista resumen; lista agrupada por mes/dia; soporta program_days cuando existen.
 - UI web: mejora visual con textos centrados, titulos de meses/dias centrados y logo en login.
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
 - Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
@@ -295,7 +342,9 @@ Estado actual:
 Tabla raw/canonical (resumen):
 - raw_imports: JSON original completo + metadatos.
 - sessions: metadatos de sesion + `source_hash`.
+- program_days: canon calendario (schema v2) + `source_hash`.
 - warmups, session_blocks, block_exercises_raw, block_items_canonical.
+- workout_definitions, competitions, competition_workouts, competition_results, athlete_executions.
 
 Reglas clave de negocio:
 - Nunca inventar datos. Si no se infiere, guardar `null` y `raw_origin_text`.
