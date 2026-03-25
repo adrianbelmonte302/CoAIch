@@ -199,6 +199,61 @@ function formatMonthLabel(monthKey: string): string {
   return `${monthNames[month - 1] || "Mes"} ${y}`;
 }
 
+function MonthYearSelect({
+  value,
+  options,
+  onChange,
+}: {
+  value: string;
+  options: string[];
+  onChange: (next: string) => void;
+}) {
+  if (Platform.OS === "web") {
+    return React.createElement(
+      "select",
+      {
+        value,
+        onChange: (event: any) => onChange(event.target.value),
+        style: {
+          borderWidth: 1,
+          borderColor: "#e2e8f0",
+          borderRadius: 8,
+          padding: "8px 10px",
+          backgroundColor: "white",
+          fontSize: "14px",
+        },
+      },
+      options.map((opt) =>
+        React.createElement(
+          "option",
+          { key: opt, value: opt },
+          opt === "all" ? "Todos los meses" : formatMonthLabel(opt)
+        )
+      )
+    );
+  }
+  return (
+    <TouchableOpacity
+      onPress={() => {
+        // fallback: no-op for native without picker
+      }}
+      style={{
+        borderWidth: 1,
+        borderColor: "#e2e8f0",
+        borderRadius: 8,
+        paddingHorizontal: 10,
+        paddingVertical: 8,
+        backgroundColor: "white",
+        minWidth: 180,
+      }}
+    >
+      <Text style={{ textAlign: "center" }}>
+        {value === "all" ? "Todos los meses" : formatMonthLabel(value)}
+      </Text>
+    </TouchableOpacity>
+  );
+}
+
 
 function formatDuration(value?: number | string | null): string {
   if (value === null || value === undefined || value === "") return "—";
@@ -512,6 +567,7 @@ function SessionListScreen({ navigation, route }: any) {
   const [filteredDate, setFilteredDate] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [showCalendar, setShowCalendar] = useState(true);
+  const [selectedMonthKey, setSelectedMonthKey] = useState("all");
   const today = new Date();
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
   const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
@@ -573,6 +629,12 @@ function SessionListScreen({ navigation, route }: any) {
 
   const displayDays = programDays.map(toDisplayDayFromProgramDay);
 
+  const monthKeys = Array.from(
+    new Set(displayDays.map((s) => getMonthKey(s.date)))
+  ).filter(Boolean);
+  monthKeys.sort();
+  const monthOptions = ["all", ...monthKeys];
+
   const allTypes = Array.from(
     new Set(
       displayDays
@@ -581,9 +643,14 @@ function SessionListScreen({ navigation, route }: any) {
     )
   ).sort();
 
+  const filteredByMonth =
+    selectedMonthKey === "all"
+      ? displayDays
+      : displayDays.filter((s) => getMonthKey(s.date) === selectedMonthKey);
+
   const filteredByDate = filteredDate
-    ? displayDays.filter((s) => s.date === filteredDate)
-    : displayDays;
+    ? filteredByMonth.filter((s) => s.date === filteredDate)
+    : filteredByMonth;
 
   const effectiveSessions = selectedTypes.length
     ? filteredByDate.filter((s) => {
@@ -594,7 +661,7 @@ function SessionListScreen({ navigation, route }: any) {
 
   const highlightDates = selectedTypes.length
     ? new Set(
-        displayDays
+        filteredByMonth
           .filter((s) => {
             const types = getProgramDayTypes(s.raw as ProgramDaySummary);
             return types.some((t) => selectedTypes.includes(t));
@@ -602,7 +669,7 @@ function SessionListScreen({ navigation, route }: any) {
           .map((s) => s.date)
           .filter(Boolean) as string[]
       )
-    : new Set(displayDays.map((s) => s.date).filter(Boolean) as string[]);
+    : new Set(filteredByMonth.map((s) => s.date).filter(Boolean) as string[]);
 
   const rows: ListRow[] = [];
   const seenDays = new Set<string>();
@@ -684,6 +751,28 @@ function SessionListScreen({ navigation, route }: any) {
               {showCalendar ? "Ocultar calendario" : "Mostrar calendario"}
             </Text>
           </TouchableOpacity>
+        </View>
+        <View style={{ marginBottom: 10, width: "100%", alignItems: "center" }}>
+          <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
+            Mes / Año
+          </Text>
+          <MonthYearSelect
+            value={selectedMonthKey}
+            options={monthOptions}
+            onChange={(next) => {
+              setSelectedMonthKey(next);
+              setFilteredDate("");
+              if (next !== "all" && next !== "Fecha desconocida") {
+                const [y, m] = next.split("-");
+                const yNum = Number(y);
+                const mNum = Number(m);
+                if (Number.isFinite(yNum) && Number.isFinite(mNum)) {
+                  setCalendarYear(yNum);
+                  setCalendarMonth(Math.max(0, mNum - 1));
+                }
+              }
+            }}
+          />
         </View>
         <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
           Calendario
