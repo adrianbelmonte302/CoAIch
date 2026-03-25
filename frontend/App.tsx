@@ -511,6 +511,7 @@ function SessionListScreen({ navigation, route }: any) {
   const [jumpDate, setJumpDate] = useState("");
   const [filteredDate, setFilteredDate] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
+  const [showCalendar, setShowCalendar] = useState(true);
   const today = new Date();
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
   const [calendarMonth, setCalendarMonth] = useState(today.getMonth());
@@ -572,6 +573,14 @@ function SessionListScreen({ navigation, route }: any) {
 
   const displayDays = programDays.map(toDisplayDayFromProgramDay);
 
+  const allTypes = Array.from(
+    new Set(
+      displayDays
+        .flatMap((s) => getProgramDayTypes(s.raw as ProgramDaySummary))
+        .filter(Boolean)
+    )
+  ).sort();
+
   const filteredByDate = filteredDate
     ? displayDays.filter((s) => s.date === filteredDate)
     : displayDays;
@@ -582,6 +591,18 @@ function SessionListScreen({ navigation, route }: any) {
         return types.some((t) => selectedTypes.includes(t));
       })
     : filteredByDate;
+
+  const highlightDates = selectedTypes.length
+    ? new Set(
+        displayDays
+          .filter((s) => {
+            const types = getProgramDayTypes(s.raw as ProgramDaySummary);
+            return types.some((t) => selectedTypes.includes(t));
+          })
+          .map((s) => s.date)
+          .filter(Boolean) as string[]
+      )
+    : new Set(displayDays.map((s) => s.date).filter(Boolean) as string[]);
 
   const rows: ListRow[] = [];
   const seenDays = new Set<string>();
@@ -615,7 +636,7 @@ function SessionListScreen({ navigation, route }: any) {
           Filtrar por tipo
         </Text>
         <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap", marginBottom: 8 }}>
-          {["strength", "rest", "stamina", "gymnastic"].map((t) => {
+          {(allTypes.length ? allTypes : ["strength", "rest", "stamina", "gymnastic"]).map((t) => {
             const active = selectedTypes.includes(t);
             return (
               <TouchableOpacity
@@ -638,25 +659,53 @@ function SessionListScreen({ navigation, route }: any) {
             );
           })}
         </View>
+        <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
+          <TouchableOpacity
+            onPress={() => setSelectedTypes([])}
+            style={{
+              backgroundColor: "#e2e8f0",
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: "#0f172a", fontWeight: "600" }}>Reset tipos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => setShowCalendar((prev) => !prev)}
+            style={{
+              backgroundColor: "#0f172a",
+              paddingHorizontal: 12,
+              paddingVertical: 6,
+              borderRadius: 8,
+            }}
+          >
+            <Text style={{ color: "#fff", fontWeight: "600" }}>
+              {showCalendar ? "Ocultar calendario" : "Mostrar calendario"}
+            </Text>
+          </TouchableOpacity>
+        </View>
         <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
           Calendario
         </Text>
-        <CalendarPicker
-          year={calendarYear}
-          monthIndex={calendarMonth}
-          datesWithSessions={new Set(displayDays.map((s) => s.date).filter(Boolean) as string[])}
-          selectedDate={filteredDate}
-          onSelectDate={(date) => {
-            setFilteredDate(date);
-            setJumpDate(date);
-          }}
-          onChangeMonth={(delta) => {
-            const next = new Date(calendarYear, calendarMonth + delta, 1);
-            setCalendarYear(next.getFullYear());
-            setCalendarMonth(next.getMonth());
-          }}
-          size="compact"
-        />
+        {showCalendar && (
+          <CalendarPicker
+            year={calendarYear}
+            monthIndex={calendarMonth}
+            datesWithSessions={highlightDates}
+            selectedDate={filteredDate}
+            onSelectDate={(date) => {
+              setFilteredDate(date);
+              setJumpDate(date);
+            }}
+            onChangeMonth={(delta) => {
+              const next = new Date(calendarYear, calendarMonth + delta, 1);
+              setCalendarYear(next.getFullYear());
+              setCalendarMonth(next.getMonth());
+            }}
+            size="compact"
+          />
+        )}
         <View style={{ flexDirection: "row", marginBottom: 12, width: "100%", justifyContent: "center" }}>
           <TouchableOpacity
             onPress={() => {
