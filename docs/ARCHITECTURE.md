@@ -41,8 +41,8 @@ La UI consume ambos modelos: los campos canónicos ofrecen orden y estructura, m
 
 ## API REST
 
-- `GET /sessions`: lista paginada ordenada por fecha, con fecha, título, duración, etiquetas y flags (rest/deload/external_reference).
-- `GET /sessions/{id}`: devuelve toda la información de la sesión, incluyendo warmup, bloques (con `session_blocks`, `block_exercises_raw` y `block_items_canonical`) y `raw_import` reference.
+- `GET /program-days`: lista program days ordenados por fecha con metadatos de calendario.
+- `GET /program-days/{id}`: devuelve el día con `session_flow` (variantes, bloques, sub-bloques y ejercicios).
 - `POST /import`: endpoint administrativo que recibe un `source_file`/`source_month` y delega al importador con adaptador detectado.
 
 ## Frontend móvil
@@ -68,6 +68,7 @@ Desde marzo 2026 el backend incorpora un **Domain Layer** nuevo con `program_day
 - `program_days` almacena el JSON v2 (session_flow, variantes, bloques, sub-bloques y ejercicios) sin aplanar la estructura.
 - `workout_definitions`, `competitions`, `competition_workouts`, `competition_results` y `athlete_executions` están creados como scaffolding para benchmarks, eventos y resultados.
 - El importador detecta `entity_type=program_day` y valida con schema v2.
-- La API `GET /program-days` devuelve program days; si no existen, puede mapear legacy con `include_legacy=1`.
+- El adaptador v1->v2 vive en `app/importer/v1_adapter.py` y es el único lugar donde se traduce legacy.
+- `scripts/migrate_v1_to_v2.py` migra datos legacy existentes en la base actual.
 
-La UI prioriza `program_days` cuando existen y cae a `sessions` cuando el pipeline v2 aún no está disponible.
+La UI solo consume `program_days`. Los datos legacy se transforman antes de entrar al dominio.

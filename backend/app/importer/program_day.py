@@ -23,6 +23,7 @@ class ProgramDayImporter:
         source_file: str,
         source_month: str,
         payload: List[Dict[str, Any]],
+        raw_payload: Optional[Any] = None,
         overwrite: bool = False,
         only_new: bool = False,
         dry_run: bool = False,
@@ -32,7 +33,7 @@ class ProgramDayImporter:
             raw_import = RawImport(
                 source_file=source_file,
                 source_month=source_month,
-                raw_json=payload,
+                raw_json=raw_payload if raw_payload is not None else payload,
                 parser_version=self.settings.PARSER_VERSION,
             )
             self.db.add(raw_import)

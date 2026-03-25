@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI, HTTPException, Security, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 
-from app.api import auth, program_days, sessions
+from app.api import auth, program_days
 from app.core.config import get_settings
 
 security = HTTPBasic()
@@ -32,5 +32,4 @@ app.add_middleware(
     allow_headers=["*"],
 )
 app.include_router(auth.router)
-app.include_router(sessions.router, dependencies=[Depends(get_current_user)])
 app.include_router(program_days.router, dependencies=[Depends(get_current_user)])

@@ -1,1 +1,1 @@
-from app.api import program_days, sessions  # noqa: F401
+from app.api import program_days  # noqa: F401

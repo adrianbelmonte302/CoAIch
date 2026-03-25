@@ -20,9 +20,9 @@ No perder ningun dato del coach. Todo lo importado queda guardado en la capa raw
 
 **Arquitectura**
 - Raw Layer: `raw_imports` guarda el JSON completo, versiona parser y metadatos de origen.
-- Canonical Layer (legacy): `sessions`, `warmups`, `session_blocks`, `block_exercises_raw`, `block_items_canonical`.
+- Canonical Layer (legacy): `sessions`, `warmups`, `session_blocks`, `block_exercises_raw`, `block_items_canonical` (solo historial v1).
 - Domain Layer (nuevo): `program_days` como entidad canonica principal del calendario + scaffolding de futuro (`workout_definitions`, `competitions`, `competition_workouts`, `competition_results`, `athlete_executions`).
-- UI: consume `program_days` cuando existen; si no, usa compatibilidad con `sessions` (legacy).
+- UI: consume solo `program_days`. El JSON v1 se adapta a v2 antes de llegar al dominio.
 
 **Diagrama (flujo de datos)**
 ```
@@ -55,6 +55,7 @@ UI (usa canonical + fallback raw)
 - Formato canonico de importacion para TrueCoach y programacion diaria.
 - Soporta variantes, bloques, sub-bloques, ejercicios y notas de coach sin perder fidelidad.
 - Fixture de ejemplo: `docs/fixtures/program_day_sample.json`.
+- Compatibilidad v1: `app/importer/v1_adapter.py` transforma JSON legacy a v2 antes de guardar.
 
 **Reglas de importacion**
 - Siempre guardar raw antes de transformar.
@@ -65,7 +66,7 @@ UI (usa canonical + fallback raw)
 **Autenticacion**
 - Login simple por usuario y contrasena, sin registro.
 - Endpoint `POST /auth/login` valida credenciales.
-- `GET /sessions` y `GET /sessions/{id}` requieren Basic Auth.
+- `GET /program-days` y `GET /program-days/{id}` requieren Basic Auth.
 - Frontend guarda credenciales en web si el usuario elige "Recordarme".
 - Auto logout tras `AUTO_LOGOUT_MIN` (60 min).
 
@@ -144,7 +145,7 @@ python importer_cli.py --limit 10 /ruta/workouts_octubre_2025.json
 ---
 
 **Importacion Program Days (schema v2)**
-El importador detecta automaticamente listas con `entity_type=program_day` (schema v2).
+El importador detecta automaticamente listas con `entity_type=program_day` (schema v2). Si recibe JSON legacy v1, lo transforma a v2 con un adaptador antes de guardar.
 ```
 python importer_cli.py /ruta/program_days_agosto_2025.json
 ```
@@ -193,11 +194,8 @@ sudo cp -r web-build/* /var/www/html/
 
 **API REST minima**
 - `POST /auth/login`
-- `GET /sessions`
-- `GET /sessions/{id}`
 - `GET /program-days`
 - `GET /program-days/{id}`
-- `GET /program-days?include_legacy=1` (mapear `sessions` si no hay program_days cargados)
 
 ---
 
@@ -207,8 +205,12 @@ sudo cp -r web-build/* /var/www/html/
 cd backend
 alembic upgrade head
 ```
-2. Importar JSON v2 (ver `docs/fixtures/program_day_sample.json`).
-3. La UI usara `program_days` cuando existan; si aun no hay, seguira mostrando `sessions` legacy.
+2. Migrar datos legacy en la base actual:
+```
+cd backend
+python scripts/migrate_v1_to_v2.py
+```
+3. Importar JSON v2 (ver `docs/fixtures/program_day_sample.json`).
 
 ---
 
@@ -277,7 +279,7 @@ sudo systemctl status coai-ch-backend
 ```
 2. API responde sin auth prompt:
 ```
-curl -s http://<IP-VPS>:8000/sessions/ | head
+curl -s http://<IP-VPS>:8000/program-days/ | head
 ```
 3. Web publicada con build nuevo:
 ```
@@ -323,12 +325,13 @@ Estado actual:
 - Backend FastAPI + PostgreSQL + SQLAlchemy + Alembic.
 - Importador con variantes (octubre vs nov/dec) y deteccion automatica.
 - Importador v2: detecta `program_days` (schema 2.0.0) y los guarda en `program_days` con deduplicacion por hash.
+- Adaptador v1->v2: JSON legacy se transforma a v2 antes de persistir (sin mezclar logica en UI/API).
 - Deduplicacion por `source_hash` (hash del payload completo de la sesion).
 - CLI admite `--overwrite`, `--only-new`, `--dry-run`, `--limit`.
-- Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/sessions` requieren Basic Auth.
-- Nuevos endpoints `/program-days` y `/program-days/{id}` (con compatibilidad legacy via `include_legacy=1` en el backend).
+- Auth: login simple (sin registro) via `POST /auth/login`. Rutas `/program-days` requieren Basic Auth.
+- Endpoints `/program-days` y `/program-days/{id}` son la base del dominio (v2).
 - Frontend Expo: login, recordarme, auto logout y logout en header.
-- UI web: calendario con dias resaltados y vista resumen; lista agrupada por mes/dia; soporta program_days cuando existen.
+- UI web: calendario con dias resaltados y vista resumen; lista agrupada por mes/dia; solo consume `program_days`.
 - UI web: mejora visual con textos centrados, titulos de meses/dias centrados y logo en login.
 - Scripts separados: `deploy_backend.sh` y `deploy_web.sh`.
 - Deploy scripts detectan el repo desde su propia ubicacion y validan rutas (evita errores por ejecutar desde el directorio equivocado).
@@ -366,3 +369,4 @@ Proximos pasos sugeridos:
 
 **Regla de mantenimiento del contexto**
 Cada cambio importante (arquitectura, auth, importador, deploy o UX) debe actualizar esta seccion de README con el nuevo estado. Esto garantiza que Codex o cualquier nuevo colaborador pueda retomar el trabajo sin perder contexto.
+

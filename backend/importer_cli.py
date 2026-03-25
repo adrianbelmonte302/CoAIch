@@ -6,8 +6,8 @@ from pathlib import Path
 from sqlalchemy.exc import SQLAlchemyError
 
 from app.db.session import SessionLocal
-from app.importer.manager import SessionImporter
 from app.importer.program_day import ProgramDayImporter
+from app.importer.v1_adapter import is_v2_payload, v1_payload_to_v2
 
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
@@ -26,63 +26,34 @@ def load_json(path: Path) -> dict:
         return json.load(handle)
 
 
-def is_program_day_payload(payload: object) -> bool:
-    if isinstance(payload, list) and payload:
-        head = payload[0]
-        if isinstance(head, dict):
-            return head.get("entity_type") == "program_day"
-    return False
-
-
 def import_file(db, path: Path, overwrite: bool, only_new: bool, dry_run: bool, limit: int | None):
     payload = load_json(path)
     month = infer_month_from_filename(path.name)
-    if is_program_day_payload(payload):
-        if limit is not None:
-            payload = payload[: max(0, limit)]
-        importer = ProgramDayImporter(db)
-        result = importer.import_payload(
-            path.name,
-            month,
-            payload,
-            overwrite=overwrite,
-            only_new=only_new,
-            dry_run=dry_run,
-        )
-        logger.info(
-            "imported program_days %s (%s) total=%s created=%s dup_db=%s overwritten=%s warnings=%s",
-            path.name,
-            month,
-            result["program_days_total"],
-            result["program_days_imported"],
-            result["duplicates_in_db"],
-            result["overwritten"],
-            len(result["warnings"]),
-        )
-        for warning in result["warnings"]:
-            logger.warning("warning: %s", warning)
-        return
+    raw_payload = payload
+    if not is_v2_payload(payload):
+        payload = v1_payload_to_v2(payload)
 
-    importer = SessionImporter(db)
+    if limit is not None:
+        payload = payload[: max(0, limit)]
+
+    importer = ProgramDayImporter(db)
     result = importer.import_payload(
         path.name,
         month,
         payload,
+        raw_payload=raw_payload,
         overwrite=overwrite,
         only_new=only_new,
         dry_run=dry_run,
-        limit=limit,
     )
     logger.info(
-        "imported %s (%s) total=%s created=%s dup_file=%s dup_db=%s overwritten=%s warnings=%s",
+        "imported program_days %s (%s) total=%s created=%s dup_db=%s overwritten=%s warnings=%s",
         path.name,
         month,
-        result["sessions_total"],
-        result["sessions_imported"],
-        result["duplicates_in_file"],
+        result["program_days_total"],
+        result["program_days_imported"],
         result["duplicates_in_db"],
         result["overwritten"],
-        result["variant"],
         len(result["warnings"]),
     )
     for warning in result["warnings"]:

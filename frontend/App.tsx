@@ -42,47 +42,6 @@ function buildBasicAuth(username: string, password: string): string {
   return `Basic ${encodeBase64(`${username}:${password}`)}`;
 }
 
-type SessionSummary = {
-  id: string;
-  date?: string;
-  title?: string;
-  session_tags?: string[];
-  estimated_duration_min?: number;
-  is_rest_day?: boolean;
-  deload_week?: boolean;
-  data_status?: string;
-  weekday?: string;
-};
-
-type SessionDetail = SessionSummary & {
-  warmup?: {
-    quote?: string;
-    mobility?: string;
-    activation?: string;
-    raw_text?: string;
-  };
-  blocks?: Array<{
-    id: string;
-    title?: string;
-    content_mode?: string;
-    raw_text?: string;
-    coach_notes?: string;
-    has_external_reference?: boolean;
-    exercises_raw?: Array<{
-      id: string;
-      name?: string;
-      format?: string;
-      notes?: string;
-    }>;
-    items_canonical?: Array<{
-      id: string;
-      movement_name?: string;
-      raw_origin_text?: string;
-      execution_notes?: string;
-    }>;
-  }>;
-};
-
 type ProgramDaySummary = {
   id: string;
   day_id: string;
@@ -117,7 +76,6 @@ type ProgramDayDetail = ProgramDaySummary & {
 };
 
 type DisplayDay = {
-  kind: "session" | "program_day";
   id: string;
   date?: string;
   weekday?: string;
@@ -126,8 +84,7 @@ type DisplayDay = {
   deload_week?: boolean;
   tags: string[];
   estimated_duration_min?: number | null;
-  data_status?: string;
-  raw: SessionSummary | ProgramDaySummary;
+  raw: ProgramDaySummary;
 };
 
 const Stack = createNativeStackNavigator();
@@ -311,22 +268,6 @@ function detectTypesFromText(text: string, types: Set<string>) {
   }
 }
 
-function getSessionTypes(session: SessionSummary & { blocks?: SessionDetail["blocks"] }): string[] {
-  const types = new Set<string>();
-  if (session.is_rest_day) types.add("rest");
-  const tags = session.session_tags || [];
-  tags.forEach((tag) => detectTypesFromText(normalizeBlockText(tag), types));
-  detectTypesFromText(normalizeBlockText(session.title || ""), types);
-  if (session.blocks) {
-    session.blocks.forEach((block) => {
-      detectTypesFromText(normalizeBlockText(block.title || ""), types);
-      detectTypesFromText(normalizeBlockText(block.content_mode || ""), types);
-      detectTypesFromText(normalizeBlockText(block.raw_text || ""), types);
-    });
-  }
-  return Array.from(types);
-}
-
 function getProgramDayTypes(programDay: ProgramDaySummary | ProgramDayDetail): string[] {
   const types = new Set<string>();
   if (programDay.is_rest_day) types.add("rest");
@@ -372,25 +313,8 @@ function getProgramDayBlockTitles(programDay: ProgramDaySummary | ProgramDayDeta
   return titles;
 }
 
-function toDisplayDayFromSession(session: SessionSummary): DisplayDay {
-  return {
-    kind: "session",
-    id: session.id,
-    date: session.date,
-    weekday: session.weekday,
-    title: session.title,
-    is_rest_day: session.is_rest_day,
-    deload_week: session.deload_week,
-    tags: session.session_tags || [],
-    estimated_duration_min: session.estimated_duration_min,
-    data_status: session.data_status,
-    raw: session,
-  };
-}
-
 function toDisplayDayFromProgramDay(programDay: ProgramDaySummary): DisplayDay {
   return {
-    kind: "program_day",
     id: programDay.id,
     date: programDay.date,
     weekday: programDay.weekday,
@@ -532,9 +456,7 @@ function CalendarPicker({
 }
 
 function SessionListScreen({ navigation, route }: any) {
-  const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [programDays, setProgramDays] = useState<ProgramDaySummary[]>([]);
-  const [dataSource, setDataSource] = useState<"session" | "program_day">("session");
   const [loading, setLoading] = useState(true);
   const [jumpDate, setJumpDate] = useState("");
   const [filteredDate, setFilteredDate] = useState("");
@@ -570,30 +492,15 @@ function SessionListScreen({ navigation, route }: any) {
         const programRes = await fetch(`${API_BASE}/program-days/`, {
           headers: { Authorization: basicAuth },
         });
-        if (programRes.ok) {
-          const data = await programRes.json();
-          if (Array.isArray(data) && data.length > 0) {
-            if (!active) return;
-            setProgramDays(data);
-            setDataSource("program_day");
-            setLoading(false);
-            return;
-          }
+        if (!programRes.ok) {
+          throw new Error(`API error: ${programRes.status}`);
         }
-      } catch (err) {
-        // ignore program-day errors and fallback to sessions
-      }
-      try {
-        const res = await fetch(`${API_BASE}/sessions/`, {
-          headers: { Authorization: basicAuth },
-        });
-        if (!res.ok) {
-          throw new Error(`API error: ${res.status}`);
-        }
-        const data = await res.json();
+        const data = await programRes.json();
         if (!active) return;
-        setSessions(data);
-        setDataSource("session");
+        setProgramDays(Array.isArray(data) ? data : []);
+      } catch (err) {
+        if (!active) return;
+        setProgramDays([]);
       } finally {
         if (active) setLoading(false);
       }
@@ -613,10 +520,7 @@ function SessionListScreen({ navigation, route }: any) {
     );
   }
 
-  const displayDays =
-    dataSource === "program_day"
-      ? programDays.map(toDisplayDayFromProgramDay)
-      : sessions.map(toDisplayDayFromSession);
+  const displayDays = programDays.map(toDisplayDayFromProgramDay);
 
   const filteredByDate = filteredDate
     ? displayDays.filter((s) => s.date === filteredDate)
@@ -624,10 +528,7 @@ function SessionListScreen({ navigation, route }: any) {
 
   const effectiveSessions = selectedTypes.length
     ? filteredByDate.filter((s) => {
-        const types =
-          s.kind === "program_day"
-            ? getProgramDayTypes(s.raw as ProgramDaySummary)
-            : getSessionTypes(s.raw as SessionSummary & { blocks?: SessionDetail["blocks"] });
+        const types = getProgramDayTypes(s.raw as ProgramDaySummary);
         return types.some((t) => selectedTypes.includes(t));
       })
     : filteredByDate;
@@ -762,18 +663,14 @@ function SessionListScreen({ navigation, route }: any) {
                 elevation: 3,
                 alignItems: "center",
               }}
-              onPress={() => navigation.push("Detail", { sessionId: session.id, kind: session.kind })}
+              onPress={() => navigation.push("Detail", { sessionId: session.id, kind: "program_day" })}
             >
               <Text style={{ fontSize: 18, fontWeight: "700", textAlign: "center" }}>{displayTitle}</Text>
               <Text style={{ color: "#666", marginTop: 4, textAlign: "center" }}>{displaySubtitle}</Text>
               <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
                 {session.is_rest_day && <Badge label="Rest" />}
                 {session.deload_week && <Badge label="Deload" />}
-                {session.data_status === "external_reference" && <Badge label="External" />}
-                {(session.kind === "program_day"
-                  ? getProgramDayTypes(session.raw as ProgramDaySummary)
-                  : getSessionTypes(session.raw as SessionSummary & { blocks?: SessionDetail["blocks"] })
-                ).map((t) => (
+                {getProgramDayTypes(session.raw as ProgramDaySummary).map((t) => (
                   <Badge key={t} label={t} />
                 ))}
                 {session.tags.map((tag) => (
@@ -828,10 +725,8 @@ function CoachScreen() {
 
 function CalendarViewScreen() {
   const { basicAuth } = useContext(AuthContext);
-  const [sessions, setSessions] = useState<SessionSummary[]>([]);
   const [programDays, setProgramDays] = useState<ProgramDaySummary[]>([]);
-  const [dataSource, setDataSource] = useState<"session" | "program_day">("session");
-  const [detailCache, setDetailCache] = useState<Record<string, SessionDetail | ProgramDayDetail>>({});
+  const [detailCache, setDetailCache] = useState<Record<string, ProgramDayDetail>>({});
   const [loading, setLoading] = useState(true);
   const [selectedDate, setSelectedDate] = useState("");
   const today = new Date();
@@ -847,35 +742,16 @@ function CalendarViewScreen() {
         const programRes = await fetch(`${API_BASE}/program-days/`, {
           headers: { Authorization: basicAuth },
         });
-        if (programRes.ok) {
-          const data = await programRes.json();
-          if (Array.isArray(data) && data.length > 0) {
-            if (!active) return;
-            setProgramDays(data);
-            setDataSource("program_day");
-            if (!selectedDate && data.length > 0) {
-              setSelectedDate(data[0].date || "");
-            }
-            setLoading(false);
-            return;
-          }
-        }
-      } catch (err) {
-        // ignore and fallback to sessions
-      }
-
-      try {
-        const res = await fetch(`${API_BASE}/sessions/`, {
-          headers: { Authorization: basicAuth },
-        });
-        if (!res.ok) throw new Error(`API error: ${res.status}`);
-        const data = await res.json();
+        if (!programRes.ok) throw new Error(`API error: ${programRes.status}`);
+        const data = await programRes.json();
         if (!active) return;
-        setSessions(data);
-        setDataSource("session");
-        if (!selectedDate && data.length > 0) {
+        setProgramDays(Array.isArray(data) ? data : []);
+        if (!selectedDate && Array.isArray(data) && data.length > 0) {
           setSelectedDate(data[0].date || "");
         }
+      } catch (err) {
+        if (!active) return;
+        setProgramDays([]);
       } finally {
         if (active) setLoading(false);
       }
@@ -888,19 +764,12 @@ function CalendarViewScreen() {
 
 
   async function fetchDetailsForDate(date: string) {
-    const targets =
-      dataSource === "program_day"
-        ? programDays.filter((s) => s.date === date)
-        : sessions.filter((s) => s.date === date);
+    const targets = programDays.filter((s) => s.date === date);
     if (targets.length === 0) return;
     const entries = await Promise.all(
       targets.map(async (s) => {
         try {
-          const endpoint =
-            dataSource === "program_day"
-              ? `${API_BASE}/program-days/${s.id}`
-              : `${API_BASE}/sessions/${s.id}`;
-          const res = await fetch(endpoint, {
+          const res = await fetch(`${API_BASE}/program-days/${s.id}`, {
             headers: { Authorization: basicAuth },
           });
           if (!res.ok) return [s.id, null] as const;
@@ -913,7 +782,7 @@ function CalendarViewScreen() {
     );
     const next = { ...detailCache };
     entries.forEach(([id, data]) => {
-      if (data) next[String(id)] = data as SessionDetail | ProgramDayDetail;
+      if (data) next[String(id)] = data as ProgramDayDetail;
     });
     setDetailCache(next);
   }
@@ -921,12 +790,9 @@ function CalendarViewScreen() {
   useEffect(() => {
     if (!basicAuth || !selectedDate) return;
     fetchDetailsForDate(selectedDate);
-  }, [basicAuth, selectedDate, sessions.length, programDays.length, dataSource]);
+  }, [basicAuth, selectedDate, programDays.length]);
 
-  const displayDays =
-    dataSource === "program_day"
-      ? programDays.map(toDisplayDayFromProgramDay)
-      : sessions.map(toDisplayDayFromSession);
+  const displayDays = programDays.map(toDisplayDayFromProgramDay);
   const datesWithSessions = new Set(displayDays.map((s) => s.date).filter(Boolean) as string[]);
   const sessionsForDate = selectedDate
     ? displayDays.filter((s) => s.date === selectedDate)
@@ -962,16 +828,9 @@ function CalendarViewScreen() {
           sessionsForDate.length > 0 ? (
             sessionsForDate.map((session) => {
               const detail = detailCache[session.id] || session.raw;
-              const isProgramDay = session.kind === "program_day";
-              const displayTitle = isProgramDay
-                ? (detail as ProgramDayDetail).display_title || "Programa del día"
-                : (detail as SessionDetail).title || "Sesión del día";
-              const durationValue = isProgramDay
-                ? (detail as ProgramDayDetail).session_context?.estimated_duration_min
-                : (detail as SessionDetail).estimated_duration_min;
-              const tags = isProgramDay
-                ? (detail as ProgramDayDetail).session_context?.tags || []
-                : (detail as SessionDetail).session_tags || [];
+              const displayTitle = (detail as ProgramDayDetail).display_title || "Programa del día";
+              const durationValue = (detail as ProgramDayDetail).session_context?.estimated_duration_min;
+              const tags = (detail as ProgramDayDetail).session_context?.tags || [];
               return (
                 <View
                   key={session.id}
@@ -994,10 +853,7 @@ function CalendarViewScreen() {
                     {displayTitle}
                   </Text>
                   <View style={{ flexDirection: "row", marginTop: 8, flexWrap: "wrap", justifyContent: "center" }}>
-                    {(isProgramDay
-                      ? getProgramDayTypes(detail as ProgramDayDetail)
-                      : getSessionTypes(detail as SessionSummary & { blocks?: SessionDetail["blocks"] })
-                    ).map((t) => (
+                    {getProgramDayTypes(detail as ProgramDayDetail).map((t) => (
                       <Badge key={t} label={t} />
                     ))}
                     {tags.map((tag: string) => (
@@ -1007,39 +863,20 @@ function CalendarViewScreen() {
                   <Text style={{ marginTop: 8, color: "#333", textAlign: "center" }}>
                     Duración estimada: {formatDuration(durationValue)} min
                   </Text>
-                  {isProgramDay ? (
-                    getProgramDayBlockTitles(detail as ProgramDayDetail).length > 0 && (
-                      <View style={{ marginTop: 12 }}>
-                        <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
-                          Bloques
+                  {getProgramDayBlockTitles(detail as ProgramDayDetail).length > 0 && (
+                    <View style={{ marginTop: 12 }}>
+                      <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+                        Bloques
+                      </Text>
+                      {getProgramDayBlockTitles(detail as ProgramDayDetail).map((title, idx) => (
+                        <Text
+                          key={`${session.id}-block-${idx}`}
+                          style={{ marginTop: 4, textAlign: "center", color: "#444" }}
+                        >
+                          {title}
                         </Text>
-                        {getProgramDayBlockTitles(detail as ProgramDayDetail).map((title, idx) => (
-                          <Text
-                            key={`${session.id}-block-${idx}`}
-                            style={{ marginTop: 4, textAlign: "center", color: "#444" }}
-                          >
-                            {title}
-                          </Text>
-                        ))}
-                      </View>
-                    )
-                  ) : (
-                    (detail as SessionDetail).blocks &&
-                    (detail as SessionDetail).blocks!.length > 0 && (
-                      <View style={{ marginTop: 12 }}>
-                        <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
-                          Bloques
-                        </Text>
-                        {(detail as SessionDetail).blocks!.map((block) => (
-                          <Text
-                            key={block.id}
-                            style={{ marginTop: 4, textAlign: "center", color: "#444" }}
-                          >
-                            {block.title || "Bloque"}
-                          </Text>
-                        ))}
-                      </View>
-                    )
+                      ))}
+                    </View>
                   )}
                 </View>
               );
@@ -1060,11 +897,8 @@ function CalendarViewScreen() {
 }
 
 function SessionDetailScreen({ route }: any) {
-  const { sessionId, kind } = route.params;
-  const [detail, setDetail] = useState<SessionDetail | ProgramDayDetail | null>(null);
-  const [resolvedKind, setResolvedKind] = useState<"session" | "program_day">(
-    kind === "program_day" ? "program_day" : "session"
-  );
+  const { sessionId } = route.params;
+  const [detail, setDetail] = useState<ProgramDayDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const { basicAuth } = useContext(AuthContext);
 
@@ -1075,38 +909,25 @@ function SessionDetailScreen({ route }: any) {
     let active = true;
     async function load() {
       setLoading(true);
-      const primary = kind === "program_day" ? "program_day" : "session";
-      const attempts =
-        primary === "program_day"
-          ? [
-              { url: `${API_BASE}/program-days/${sessionId}`, kind: "program_day" as const },
-              { url: `${API_BASE}/sessions/${sessionId}`, kind: "session" as const },
-            ]
-          : [
-              { url: `${API_BASE}/sessions/${sessionId}`, kind: "session" as const },
-              { url: `${API_BASE}/program-days/${sessionId}?include_legacy=1`, kind: "program_day" as const },
-            ];
-      for (const attempt of attempts) {
-        try {
-          const res = await fetch(attempt.url, { headers: { Authorization: basicAuth } });
-          if (!res.ok) continue;
-          const data = await res.json();
-          if (!active) return;
-          setDetail(data);
-          setResolvedKind(attempt.kind);
-          setLoading(false);
-          return;
-        } catch (err) {
-          // try next endpoint
+      try {
+        const res = await fetch(`${API_BASE}/program-days/${sessionId}`, {
+          headers: { Authorization: basicAuth },
+        });
+        if (!res.ok) {
+          throw new Error(`API error: ${res.status}`);
         }
+        const data = await res.json();
+        if (!active) return;
+        setDetail(data);
+      } finally {
+        if (active) setLoading(false);
       }
-      if (active) setLoading(false);
     }
     load();
     return () => {
       active = false;
     };
-  }, [sessionId, basicAuth, kind]);
+  }, [sessionId, basicAuth]);
 
   if (loading || !detail) {
     return (
@@ -1117,192 +938,115 @@ function SessionDetailScreen({ route }: any) {
     );
   }
 
-  if (resolvedKind === "program_day") {
-    const programDay = detail as ProgramDayDetail;
-    const detailTitleParts: string[] = [];
-    if (programDay.weekday) detailTitleParts.push(programDay.weekday);
-    if (programDay.date) detailTitleParts.push(programDay.date);
-    if (programDay.display_title) detailTitleParts.push(programDay.display_title);
-    const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Programa del día";
-    const sessionFlow = programDay.session_flow as any;
-    const variants = sessionFlow?.variants || [];
-    const sharedBlocks = sessionFlow?.shared_blocks || [];
-
-    return (
-      <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
-        <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{detailTitle}</Text>
-        <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center", flexWrap: "wrap" }}>
-          {(programDay.session_context?.tags || []).map((tag) => (
-            <Badge key={tag} label={tag} />
-          ))}
-          {programDay.is_rest_day && <Badge label="Descanso" />}
-          {programDay.deload_week && <Badge label="Deload" />}
-        </View>
-        <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
-          Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
-        </Text>
-
-        {sessionFlow?.general_warmup && (
-          <View style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
-            {renderTextBlock(sessionFlow.general_warmup)}
-          </View>
-        )}
-
-        {variants.map((variant: any, idx: number) => (
-          <View key={`variant-${idx}`} style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
-              Variante {variant?.variant_id || idx + 1}
-            </Text>
-            {variant?.title && (
-              <Text style={{ marginTop: 4, textAlign: "center", color: "#444" }}>{variant.title}</Text>
-            )}
-            {variant?.warmup && renderTextBlock(variant.warmup)}
-            {(variant?.blocks || []).map((block: any, bIdx: number) => (
-              <View
-                key={`variant-${idx}-block-${bIdx}`}
-                style={{
-                  marginTop: 12,
-                  padding: 16,
-                  backgroundColor: "white",
-                  borderRadius: 12,
-                  shadowColor: "#000",
-                  shadowOpacity: 0.05,
-                  shadowRadius: 6,
-                  elevation: 2,
-                }}
-              >
-                <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>
-                  {block?.title || `Bloque ${bIdx + 1}`}
-                </Text>
-                {block?.block_type && (
-                  <Text style={{ color: "#888", marginTop: 2, textAlign: "center" }}>
-                    {block.block_type}
-                  </Text>
-                )}
-                {block?.coach_notes_literal && (
-                  <Text style={{ marginTop: 4, fontStyle: "italic", color: "#444", textAlign: "center" }}>
-                    {block.coach_notes_literal}
-                  </Text>
-                )}
-                {(block?.prescription?.sub_blocks || []).map((sub: any, sIdx: number) => (
-                  <View key={`sub-${sIdx}`} style={{ marginTop: 8 }}>
-                    <Text style={{ fontWeight: "600", textAlign: "center" }}>
-                      {sub?.title || `Sub-bloque ${sIdx + 1}`}
-                    </Text>
-                    {sub?.format && (
-                      <Text style={{ color: "#666", textAlign: "center" }}>{sub.format}</Text>
-                    )}
-                    {renderTextBlock(sub?.description)}
-                    {(sub?.exercises || []).map((exercise: any, eIdx: number) => (
-                      <View key={`ex-${eIdx}`} style={{ marginTop: 6 }}>
-                        <Text style={{ fontWeight: "600", textAlign: "center" }}>{exercise?.name}</Text>
-                        {exercise?.format && (
-                          <Text style={{ color: "#444", textAlign: "center" }}>{exercise.format}</Text>
-                        )}
-                        {exercise?.notes && renderTextBlock(exercise.notes)}
-                      </View>
-                    ))}
-                  </View>
-                ))}
-              </View>
-            ))}
-          </View>
-        ))}
-
-        {sharedBlocks.length > 0 && (
-          <View style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>Bloques compartidos</Text>
-            {sharedBlocks.map((block: any, bIdx: number) => (
-              <Text key={`shared-${bIdx}`} style={{ marginTop: 4, textAlign: "center", color: "#444" }}>
-                {block?.title || `Bloque ${bIdx + 1}`}
-              </Text>
-            ))}
-          </View>
-        )}
-
-        {sessionFlow?.cooldown && (
-          <View style={{ marginTop: 16 }}>
-            <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Cooldown</Text>
-            {renderTextBlock(sessionFlow.cooldown)}
-          </View>
-        )}
-      </ScrollView>
-    );
-  }
-
-  const session = detail as SessionDetail;
+  const programDay = detail;
   const detailTitleParts: string[] = [];
-  if (session.weekday) detailTitleParts.push(session.weekday);
-  if (session.date) detailTitleParts.push(session.date);
-  if (session.title) detailTitleParts.push(session.title);
-  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Sesión";
+  if (programDay.weekday) detailTitleParts.push(programDay.weekday);
+  if (programDay.date) detailTitleParts.push(programDay.date);
+  if (programDay.display_title) detailTitleParts.push(programDay.display_title);
+  const detailTitle = detailTitleParts.length ? detailTitleParts.join(" - ") : "Programa del día";
+  const sessionFlow = programDay.session_flow as any;
+  const variants = sessionFlow?.variants || [];
+  const sharedBlocks = sessionFlow?.shared_blocks || [];
 
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
       <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{detailTitle}</Text>
       <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center", flexWrap: "wrap" }}>
-        {(session.session_tags || []).map((tag) => (
+        {(programDay.session_context?.tags || []).map((tag) => (
           <Badge key={tag} label={tag} />
         ))}
-        {session.is_rest_day && <Badge label="Descanso" />}
-        {session.deload_week && <Badge label="Deload" />}
-        {session.data_status === "external_reference" && <Badge label="Referencia externa" />}
+        {programDay.is_rest_day && <Badge label="Descanso" />}
+        {programDay.deload_week && <Badge label="Deload" />}
       </View>
       <Text style={{ marginTop: 8, fontWeight: "600", textAlign: "center" }}>
-        Duración estimada: {formatDuration(session.estimated_duration_min)} min
+        Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
       </Text>
 
-      {session.warmup && (
+      {sessionFlow?.general_warmup && (
         <View style={{ marginTop: 16 }}>
           <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
-          {renderTextBlock(session.warmup.raw_text || session.warmup.mobility)}
-          {session.warmup.activation && renderTextBlock(session.warmup.activation)}
+          {renderTextBlock(sessionFlow.general_warmup)}
         </View>
       )}
 
-      {(session.blocks || []).map((block) => (
-        <View
-          key={block.id}
-          style={{
-            marginTop: 16,
-            padding: 16,
-            backgroundColor: "white",
-            borderRadius: 12,
-            shadowColor: "#000",
-            shadowOpacity: 0.05,
-            shadowRadius: 6,
-            elevation: 2,
-          }}
-        >
-          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>{block.title || "Bloque"}</Text>
-          <Text style={{ color: "#888", marginTop: 2, textAlign: "center" }}>{block.content_mode}</Text>
-          {block.raw_text && (
-            <Text style={{ marginTop: 8, color: "#222" }}>{block.raw_text}</Text>
+      {variants.map((variant: any, idx: number) => (
+        <View key={`variant-${idx}`} style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>
+            Variante {variant?.variant_id || idx + 1}
+          </Text>
+          {variant?.title && (
+            <Text style={{ marginTop: 4, textAlign: "center", color: "#444" }}>{variant.title}</Text>
           )}
-          {block.coach_notes && (
-            <Text style={{ marginTop: 4, fontStyle: "italic", color: "#444" }}>
-              Coach notes: {block.coach_notes}
-            </Text>
-          )}
-          {(block.exercises_raw || []).map((exercise) => (
-            <View key={exercise.id} style={{ marginTop: 8 }}>
-              <Text style={{ fontWeight: "600" }}>{exercise.name}</Text>
-              <Text style={{ color: "#444" }}>{exercise.format}</Text>
-              {exercise.notes && <Text>{exercise.notes}</Text>}
-            </View>
-          ))}
-          {(block.items_canonical || []).map((item) => (
-            <View key={item.id} style={{ marginTop: 8, borderTopWidth: 1, borderTopColor: "#eee", paddingTop: 8 }}>
-              <Text style={{ fontSize: 14, fontWeight: "600" }}>{item.movement_name || "Item canonico"}</Text>
-              {item.execution_notes && <Text style={{ color: "#555" }}>{item.execution_notes}</Text>}
-              {item.raw_origin_text && (
-                <Text style={{ fontSize: 12, color: "#999", marginTop: 2 }}>{item.raw_origin_text}</Text>
+          {variant?.warmup && renderTextBlock(variant.warmup)}
+          {(variant?.blocks || []).map((block: any, bIdx: number) => (
+            <View
+              key={`variant-${idx}-block-${bIdx}`}
+              style={{
+                marginTop: 12,
+                padding: 16,
+                backgroundColor: "white",
+                borderRadius: 12,
+                shadowColor: "#000",
+                shadowOpacity: 0.05,
+                shadowRadius: 6,
+                elevation: 2,
+              }}
+            >
+              <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>
+                {block?.title || `Bloque ${bIdx + 1}`}
+              </Text>
+              {block?.block_type && (
+                <Text style={{ color: "#888", marginTop: 2, textAlign: "center" }}>
+                  {block.block_type}
+                </Text>
               )}
+              {block?.coach_notes_literal && (
+                <Text style={{ marginTop: 4, fontStyle: "italic", color: "#444", textAlign: "center" }}>
+                  {block.coach_notes_literal}
+                </Text>
+              )}
+              {(block?.prescription?.sub_blocks || []).map((sub: any, sIdx: number) => (
+                <View key={`sub-${sIdx}`} style={{ marginTop: 8 }}>
+                  <Text style={{ fontWeight: "600", textAlign: "center" }}>
+                    {sub?.title || `Sub-bloque ${sIdx + 1}`}
+                  </Text>
+                  {sub?.format && (
+                    <Text style={{ color: "#666", textAlign: "center" }}>{sub.format}</Text>
+                  )}
+                  {renderTextBlock(sub?.description)}
+                  {(sub?.exercises || []).map((exercise: any, eIdx: number) => (
+                    <View key={`ex-${eIdx}`} style={{ marginTop: 6 }}>
+                      <Text style={{ fontWeight: "600", textAlign: "center" }}>{exercise?.name}</Text>
+                      {exercise?.format && (
+                        <Text style={{ color: "#444", textAlign: "center" }}>{exercise.format}</Text>
+                      )}
+                      {exercise?.notes && renderTextBlock(exercise.notes)}
+                    </View>
+                  ))}
+                </View>
+              ))}
             </View>
           ))}
         </View>
       ))}
+
+      {sharedBlocks.length > 0 && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center" }}>Bloques compartidos</Text>
+          {sharedBlocks.map((block: any, bIdx: number) => (
+            <Text key={`shared-${bIdx}`} style={{ marginTop: 4, textAlign: "center", color: "#444" }}>
+              {block?.title || `Bloque ${bIdx + 1}`}
+            </Text>
+          ))}
+        </View>
+      )}
+
+      {sessionFlow?.cooldown && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Cooldown</Text>
+          {renderTextBlock(sessionFlow.cooldown)}
+        </View>
+      )}
     </ScrollView>
   );
 }
