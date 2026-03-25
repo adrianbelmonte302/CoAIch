@@ -11,7 +11,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 
@@ -1124,8 +1124,10 @@ function CalendarViewScreen() {
 function SessionDetailScreen({ route }: any) {
   const { sessionId } = route.params;
   const [detail, setDetail] = useState<ProgramDayDetail | null>(null);
+  const [programDays, setProgramDays] = useState<ProgramDaySummary[]>([]);
   const [loading, setLoading] = useState(true);
   const { basicAuth } = useContext(AuthContext);
+  const navigation = useNavigation<any>();
 
   useEffect(() => {
     if (!basicAuth) {
@@ -1144,6 +1146,15 @@ function SessionDetailScreen({ route }: any) {
         const data = await res.json();
         if (!active) return;
         setDetail(data);
+        const listRes = await fetch(`${API_BASE}/program-days/`, {
+          headers: { Authorization: basicAuth },
+        });
+        if (listRes.ok) {
+          const listData = await listRes.json();
+          if (Array.isArray(listData)) {
+            setProgramDays(listData);
+          }
+        }
       } finally {
         if (active) setLoading(false);
       }
@@ -1173,8 +1184,44 @@ function SessionDetailScreen({ route }: any) {
   const variants = sessionFlow?.variants || [];
   const sharedBlocks = sessionFlow?.shared_blocks || [];
 
+  const sortedDays = [...programDays].sort((a, b) => {
+    const aDate = a.date || "";
+    const bDate = b.date || "";
+    if (aDate === bDate) return String(a.id).localeCompare(String(b.id));
+    return aDate.localeCompare(bDate);
+  });
+  const currentIndex = sortedDays.findIndex((d) => String(d.id) === String(sessionId));
+  const prevDay = currentIndex > 0 ? sortedDays[currentIndex - 1] : null;
+  const nextDay = currentIndex >= 0 && currentIndex < sortedDays.length - 1 ? sortedDays[currentIndex + 1] : null;
+
   return (
     <ScrollView style={{ flex: 1, backgroundColor: "#f5f5f5" }} contentContainerStyle={{ padding: 16 }}>
+      <View style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 12 }}>
+        <TouchableOpacity
+          disabled={!prevDay}
+          onPress={() => prevDay && navigation.push("Detail", { sessionId: prevDay.id, kind: "program_day" })}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+            backgroundColor: prevDay ? "#e2e8f0" : "#f1f5f9",
+          }}
+        >
+          <Text style={{ fontWeight: "700", color: prevDay ? "#0f172a" : "#94a3b8" }}>{"<"} Día anterior</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          disabled={!nextDay}
+          onPress={() => nextDay && navigation.push("Detail", { sessionId: nextDay.id, kind: "program_day" })}
+          style={{
+            paddingHorizontal: 12,
+            paddingVertical: 6,
+            borderRadius: 8,
+            backgroundColor: nextDay ? "#e2e8f0" : "#f1f5f9",
+          }}
+        >
+          <Text style={{ fontWeight: "700", color: nextDay ? "#0f172a" : "#94a3b8" }}>Día siguiente {">"}</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={{ fontSize: 20, fontWeight: "700", textAlign: "center" }}>{detailTitle}</Text>
       <View style={{ flexDirection: "row", marginTop: 8, justifyContent: "center", flexWrap: "wrap" }}>
         {(programDay.session_context?.tags || []).map((tag) => (
