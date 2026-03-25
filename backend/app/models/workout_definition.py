@@ -15,4 +15,4 @@ class WorkoutDefinition(Base):
     description = Column(Text, nullable=True)
     workout_type = Column(String, nullable=True)
     source = Column(String, nullable=True)
-    metadata = Column(JSONB, nullable=True)
+    metadata_json = Column("metadata", JSONB, nullable=True)

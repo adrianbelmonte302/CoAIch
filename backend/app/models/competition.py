@@ -13,4 +13,4 @@ class Competition(Base):
     name = Column(String, nullable=False)
     season_year = Column(Integer, nullable=True)
     organizer = Column(String, nullable=True)
-    metadata = Column(JSONB, nullable=True)
+    metadata_json = Column("metadata", JSONB, nullable=True)
