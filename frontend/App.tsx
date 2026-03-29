@@ -275,6 +275,15 @@ function renderMultiline(text?: string) {
 function extractText(value?: any): string | null {
   if (!value) return null;
   if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (entries.length === 1) {
+      const loneValue = entries[0]?.[1];
+      if (typeof loneValue === "string" && loneValue.trim()) {
+        return loneValue.trim();
+      }
+    }
+  }
   const parts: string[] = [];
   ["raw_text", "text", "description", "mobility", "activation", "quote", "literal_day_text"].forEach(
     (key) => {
