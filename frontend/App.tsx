@@ -278,9 +278,13 @@ function extractText(value?: any): string | null {
   if (typeof value === "object") {
     const entries = Object.entries(value);
     if (entries.length === 1) {
+      const loneKey = entries[0]?.[0];
       const loneValue = entries[0]?.[1];
       if (typeof loneValue === "string" && loneValue.trim()) {
         return loneValue.trim();
+      }
+      if ((loneValue === null || loneValue === undefined || loneValue === "") && loneKey?.trim()) {
+        return loneKey.trim();
       }
     }
   }
@@ -293,6 +297,21 @@ function extractText(value?: any): string | null {
       }
     }
   );
+  if (typeof value === "object") {
+    Object.entries(value).forEach(([key, entry]) => {
+      if (typeof entry === "string" && entry.trim()) {
+        parts.push(entry.trim());
+      } else if (entry === null || entry === undefined || entry === "") {
+        if (key && !["raw_text", "text", "description", "mobility", "activation", "quote", "literal_day_text"].includes(key)) {
+          parts.push(key);
+        }
+      } else if (typeof entry === "number" || typeof entry === "boolean") {
+        parts.push(`${key}: ${entry}`);
+      } else if (entry && typeof entry === "object") {
+        parts.push(`${key}: ${JSON.stringify(entry)}`);
+      }
+    });
+  }
   if (parts.length) return parts.join("\n");
   return null;
 }
