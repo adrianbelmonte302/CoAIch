@@ -1,0 +1,230 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Program Day Schema v2.1.0",
+  "type": "array",
+  "items": {
+    "$ref": "#/$defs/ProgramDay"
+  },
+  "$defs": {
+    "Load": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "prescribed_kg": { "type": ["number", "null"] },
+        "prescribed_kg_min": { "type": ["number", "null"] },
+        "prescribed_kg_max": { "type": ["number", "null"] },
+        "percent_1rm_min": { "type": ["number", "null"] },
+        "percent_1rm_max": { "type": ["number", "null"] },
+        "rpe": { "type": ["number", "null"] },
+        "rir": { "type": ["number", "null"] },
+        "load_notes": { "type": ["string", "null"] }
+      }
+    },
+    "SetStructure": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "sets": { "type": ["integer", "null"] },
+        "rounds": { "type": ["integer", "null"] },
+        "reps": { "type": ["integer", "null"] },
+        "reps_per_side": { "type": ["integer", "null"] },
+        "duration_sec": { "type": ["integer", "null"] },
+        "duration_min": { "type": ["integer", "null"] },
+        "distance_m": { "type": ["number", "null"] },
+        "calories": { "type": ["integer", "null"] },
+        "rest_sec": { "type": ["integer", "null"] },
+        "load": { "$ref": "#/$defs/Load" },
+        "tempo": { "type": ["string", "null"] },
+        "target": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "Exercise": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["exercise_id"],
+      "properties": {
+        "exercise_id": { "type": "string" },
+        "name": { "type": ["string", "null"] },
+        "movement_category": { "type": ["string", "null"] },
+        "modality": { "type": ["string", "null"] },
+        "format": { "type": ["string", "null"] },
+        "set_structure": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SetStructure" }
+        },
+        "equipment": { "type": "array", "items": { "type": "string" } },
+        "rx_options": { "type": ["string", "null"] },
+        "scaled_options": { "type": ["string", "null"] },
+        "intermediate_options": { "type": ["string", "null"] },
+        "women_options": { "type": ["string", "null"] },
+        "men_options": { "type": ["string", "null"] },
+        "alternatives": { "type": "array", "items": { "type": "string" } },
+        "standards": { "type": "array", "items": { "type": "string" } },
+        "targets": { "type": "array", "items": { "type": "string" } },
+        "score_format": { "type": ["string", "null"] },
+        "notes": { "type": ["string", "null"] }
+      }
+    },
+    "SubBlock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["sub_block_id"],
+      "properties": {
+        "sub_block_id": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "format": { "type": ["string", "null"] },
+        "duration_min": { "type": ["integer", "null"] },
+        "time_cap_min": { "type": ["integer", "null"] },
+        "rest_sec": { "type": ["integer", "null"] },
+        "description": { "type": ["string", "null"] },
+        "exercises": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/Exercise" }
+        }
+      }
+    },
+    "Prescription": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "format": { "type": ["string", "null"] },
+        "time_cap_min": { "type": ["integer", "null"] },
+        "duration_min": { "type": ["integer", "null"] },
+        "rest_between_subblocks_sec": { "type": ["integer", "null"] },
+        "sub_blocks": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/SubBlock" }
+        }
+      }
+    },
+    "CoachNotesStructured": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "stimulus": { "type": "array", "items": { "type": "string" } },
+        "strategy": { "type": "array", "items": { "type": "string" } },
+        "pacing": { "type": "array", "items": { "type": "string" } },
+        "breathing": { "type": "array", "items": { "type": "string" } },
+        "technical_cues": { "type": "array", "items": { "type": "string" } },
+        "common_errors": { "type": "array", "items": { "type": "string" } },
+        "recovery_guidance": { "type": "array", "items": { "type": "string" } },
+        "what_to_record": { "type": "array", "items": { "type": "string" } },
+        "purpose": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "Block": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["block_id", "sequence_order"],
+      "properties": {
+        "block_id": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "block_type": { "type": ["string", "null"] },
+        "sequence_order": { "type": "integer" },
+        "focus": { "type": "array", "items": { "type": "string" } },
+        "prescription": { "$ref": "#/$defs/Prescription" },
+        "standards": { "type": "array", "items": { "type": "string" } },
+        "targets": { "type": "array", "items": { "type": "string" } },
+        "alternatives": { "type": "array", "items": { "type": "string" } },
+        "coach_notes_literal": { "type": ["string", "null"] },
+        "coach_notes_structured": { "$ref": "#/$defs/CoachNotesStructured" }
+      }
+    },
+    "Variant": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["variant_id"],
+      "properties": {
+        "variant_id": { "type": "string" },
+        "title": { "type": ["string", "null"] },
+        "modality": { "type": ["string", "null"] },
+        "selection_rule": { "type": ["string", "null"] },
+        "warmup": { "type": ["object", "null"] },
+        "blocks": { "type": "array", "items": { "$ref": "#/$defs/Block" } },
+        "cooldown": { "type": ["object", "null"] },
+        "notes_literal": { "type": ["string", "null"] }
+      }
+    },
+    "SessionFlow": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "general_warmup": { "type": ["object", "null"] },
+        "variants": { "type": "array", "items": { "$ref": "#/$defs/Variant" } },
+        "shared_blocks": { "type": "array", "items": { "$ref": "#/$defs/Block" } },
+        "cooldown": { "type": ["object", "null"] },
+        "mobility_flow": { "type": ["object", "null"] }
+      }
+    },
+    "Classification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "session_archetype": { "type": ["string", "null"] },
+        "primary_modalities": { "type": "array", "items": { "type": "string" } },
+        "movement_patterns": { "type": "array", "items": { "type": "string" } },
+        "energy_systems": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "SourceIntegrity": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "data_complete": { "type": ["boolean", "null"] },
+        "parser_confidence": { "type": ["string", "null"] },
+        "missing_sections": { "type": "array", "items": { "type": "string" } },
+        "detection_subject": { "type": ["string", "null"] },
+        "source_type": { "type": ["string", "null"] }
+      }
+    },
+    "RawContent": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "quote": { "type": ["string", "null"] },
+        "literal_day_text": { "type": ["string", "null"] }
+      }
+    },
+    "SessionContext": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "tags": { "type": "array", "items": { "type": "string" } },
+        "estimated_duration_min": { "type": ["integer", "null"] },
+        "priority": { "type": ["string", "null"] },
+        "intended_stimulus": { "type": "array", "items": { "type": "string" } },
+        "recording_requests": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "ProgramDay": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["schema_version", "entity_type", "day_id", "date"],
+      "properties": {
+        "schema_version": { "type": "string", "pattern": "^2\\." },
+        "entity_type": { "type": "string", "pattern": "^program_day$" },
+        "day_id": { "type": "string" },
+        "date": { "type": "string" },
+        "weekday": { "type": ["string", "null"] },
+        "display_title": { "type": ["string", "null"] },
+        "is_rest_day": { "type": ["boolean", "null"] },
+        "day_type": { "type": ["string", "null"] },
+        "deload_week": { "type": ["boolean", "null"] },
+        "program_source": { "type": ["string", "null"] },
+        "athlete_ref": { "type": ["string", "null"] },
+        "classification": { "$ref": "#/$defs/Classification" },
+        "related_workout_ids": { "type": "array", "items": { "type": "string" } },
+        "related_competition_ids": { "type": "array", "items": { "type": "string" } },
+        "source_integrity": { "$ref": "#/$defs/SourceIntegrity" },
+        "raw_content": { "$ref": "#/$defs/RawContent" },
+        "session_context": { "$ref": "#/$defs/SessionContext" },
+        "session_flow": { "$ref": "#/$defs/SessionFlow" },
+        "execution_log": { "type": ["object", "null"] },
+        "athlete_feedback": { "type": ["object", "null"] },
+        "derived_metrics": { "type": ["object", "null"] },
+        "ai_annotations": { "type": ["object", "null"] }
+      }
+    }
+  }
+}

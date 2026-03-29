@@ -1,4 +1,5 @@
 import json
+from pathlib import Path
 
 import pytest
 from sqlalchemy import create_engine
@@ -9,6 +10,7 @@ from app.importer.program_day import ProgramDayImporter
 from app.importer.v1_adapter import v1_payload_to_v2
 from app.models.program_day import ProgramDay
 from app.models.raw_import import RawImport
+from app.schemas.program_day_import import ProgramDayImportSchema
 
 
 @pytest.fixture
@@ -77,3 +79,17 @@ def test_program_day_importer_preserves_raw_payload(db: Session):
     assert raw
     assert json.dumps(raw.raw_json)
     assert raw.raw_json == V1_SAMPLE
+
+
+def test_program_day_fixture_matches_import_schema():
+    fixture_path = (
+        Path(__file__).resolve().parents[3]
+        / "docs"
+        / "fixtures"
+        / "program_day_sample.json"
+    )
+    payload = json.loads(fixture_path.read_text(encoding="utf-8"))
+    assert isinstance(payload, list)
+    assert payload[0]["schema_version"] == "2.1.0"
+    for item in payload:
+        ProgramDayImportSchema.model_validate(item)
