@@ -1226,6 +1226,7 @@ function SessionDetailScreen({ route }: any) {
   const sessionFlow = programDay.session_flow as any;
   const variants = sessionFlow?.variants || [];
   const sharedBlocks = sessionFlow?.shared_blocks || [];
+  const generalWarmupText = extractText(sessionFlow?.general_warmup);
 
   const sortedDays = [...programDays].sort((a, b) => {
     const aDate = a.date || "";
@@ -1282,7 +1283,6 @@ function SessionDetailScreen({ route }: any) {
         Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
       </Text>
 
-      const generalWarmupText = extractText(sessionFlow?.general_warmup);
       {generalWarmupText && (
         <View style={{ marginTop: 16 }}>
           <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
