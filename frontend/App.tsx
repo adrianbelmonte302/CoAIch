@@ -322,10 +322,36 @@ function renderTextBlock(value?: any) {
 function normalizeValueToLines(value?: any): string[] {
   if (value === null || value === undefined) return [];
   if (typeof value === "string") {
-    return value
+    const cleaned = value
       .split("\n")
-      .map((line) => line.trim())
+      .map((line) => {
+        let text = line.trim();
+        if (!text) return "";
+        if (text.startsWith('"{') && text.endsWith('}"')) {
+          text = text.slice(1, -1);
+        }
+        if (text.startsWith("{") && text.endsWith("}")) {
+          const inner = text.slice(1, -1).trim();
+          if (inner && !inner.includes(":")) {
+            text = inner;
+          } else {
+            try {
+              const parsed = JSON.parse(text);
+              if (typeof parsed === "string") {
+                text = parsed;
+              } else if (parsed && typeof parsed === "object") {
+                const values = Object.values(parsed).filter((v) => typeof v === "string") as string[];
+                if (values.length) text = values.join(" · ");
+              }
+            } catch {
+              // keep as-is
+            }
+          }
+        }
+        return text;
+      })
       .filter(Boolean);
+    return cleaned;
   }
   if (Array.isArray(value)) {
     return value.map((entry) => String(entry)).filter(Boolean);
