@@ -15,6 +15,19 @@ from pydantic import ValidationError  # noqa: E402
 from app.schemas.program_day_import import ProgramDayImportSchema  # noqa: E402
 
 
+WEEKDAYS_ES = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"]
+
+
+def weekday_from_date(value: Any) -> str | None:
+    if not value:
+        return None
+    try:
+        parsed = date.fromisoformat(str(value))
+        return WEEKDAYS_ES[parsed.weekday()]
+    except Exception:
+        return None
+
+
 def load_json(path: str) -> Any:
     with open(path, "r", encoding="utf-8") as handle:
         return json.load(handle)
@@ -84,7 +97,12 @@ def main() -> None:
         issues = validate_item(idx, item)
         errors.extend(issues)
         if not has_training_content(item):
-            no_training.append(item.get("date") or item.get("day_id") or f"idx={idx}")
+            day_date = item.get("date") or item.get("day_id")
+            weekday = item.get("weekday") or weekday_from_date(day_date)
+            label = day_date or f"idx={idx}"
+            if weekday:
+                label = f"{label} ({weekday})"
+            no_training.append(label)
 
         if item.get("schema_version", "").startswith("2."):
             if item.get("entity_type") != "program_day":
