@@ -251,6 +251,13 @@ cd ~/CoAIch
 ```
 El script crea backups en `./backups/<fecha_hora>/` y antes de limpiar hace un backup automático.
 
+**Exportar program_days a JSON por mes**
+```
+cd ~/CoAIch/backend
+python scripts/export_program_days.py --out-dir exports
+```
+Genera archivos `workouts_<MES>_<AÑO>.json` dentro de `backend/exports/`.
+
 **Chequeo completo del sistema (servicios + API + web)**
 ```
 cd ~/CoAIch
