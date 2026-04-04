@@ -1294,7 +1294,6 @@ function SessionDetailScreen({ route }: any) {
   const sessionFlow = programDay.session_flow as any;
   const variants = sessionFlow?.variants || [];
   const sharedBlocks = sessionFlow?.shared_blocks || [];
-  const generalWarmupText = extractText(sessionFlow?.general_warmup);
 
   const sortedDays = [...programDays].sort((a, b) => {
     const aDate = a.date || "";
@@ -1351,16 +1350,7 @@ function SessionDetailScreen({ route }: any) {
         Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
       </Text>
 
-<<<<<<< HEAD
       {sessionFlow?.general_warmup && <WarmupCard warmup={sessionFlow.general_warmup} />}
-=======
-      {generalWarmupText && (
-        <View style={{ marginTop: 16 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
-          {renderMultiline(generalWarmupText)}
-        </View>
-      )}
->>>>>>> 03408b6d780ec359d5220f84b813e1ed7f20ad0b
 
       {variants.map((variant: any, idx: number) => (
         <View key={`variant-${idx}`} style={{ marginTop: 16 }}>
@@ -1370,16 +1360,7 @@ function SessionDetailScreen({ route }: any) {
           {variant?.title && (
             <Text style={{ marginTop: 4, textAlign: "center", color: "#444" }}>{variant.title}</Text>
           )}
-<<<<<<< HEAD
           {variant?.warmup && <WarmupCard warmup={variant.warmup} />}
-=======
-          {variant?.warmup && (() => {
-            const variantWarmupText = extractText(variant.warmup);
-            if (!variantWarmupText) return null;
-            if (generalWarmupText && variantWarmupText === generalWarmupText) return null;
-            return renderMultiline(variantWarmupText);
-          })()}
->>>>>>> 03408b6d780ec359d5220f84b813e1ed7f20ad0b
           {(variant?.blocks || []).map((block: any, bIdx: number) => (
             <View
               key={`variant-${idx}-block-${bIdx}`}
