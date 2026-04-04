@@ -4,6 +4,7 @@ import {
   FlatList,
   Image,
   Platform,
+  Dimensions,
   SafeAreaView,
   ScrollView,
   Text,
@@ -274,6 +275,31 @@ function renderMultiline(text?: string) {
 function extractText(value?: any): string | null {
   if (!value) return null;
   if (typeof value === "string") return value;
+  if (typeof value === "object") {
+    const entries = Object.entries(value);
+    if (!entries.length) return null;
+    if (entries.length === 1) {
+      const loneKey = entries[0]?.[0];
+      const loneValue = entries[0]?.[1];
+      if (typeof loneValue === "string" && loneValue.trim()) {
+        return loneValue.trim();
+      }
+      if ((loneValue === null || loneValue === undefined || loneValue === "") && loneKey?.trim()) {
+        return loneKey.trim();
+      }
+    }
+    const structuredLines: string[] = [];
+    entries.forEach(([key, entry]) => {
+      if (typeof entry === "string" && entry.trim()) {
+        structuredLines.push(key ? `${key}: ${entry.trim()}` : entry.trim());
+      } else if (entry === null || entry === undefined || entry === "") {
+        if (key) structuredLines.push(key);
+      } else if (typeof entry === "number" || typeof entry === "boolean") {
+        structuredLines.push(`${key}: ${entry}`);
+      }
+    });
+    if (structuredLines.length) return structuredLines.join("\n");
+  }
   const parts: string[] = [];
   ["raw_text", "text", "description", "mobility", "activation", "quote", "literal_day_text"].forEach(
     (key) => {
@@ -652,6 +678,9 @@ function SessionListScreen({ navigation, route }: any) {
   const [filteredDate, setFilteredDate] = useState("");
   const [selectedTypes, setSelectedTypes] = useState<string[]>([]);
   const [showCalendar, setShowCalendar] = useState(false);
+  const initialShowFilters =
+    Platform.OS === "web" && Dimensions.get("window").width >= 900;
+  const [showFilters, setShowFilters] = useState(initialShowFilters);
   const [selectedMonthKey, setSelectedMonthKey] = useState("all");
   const today = new Date();
   const [calendarYear, setCalendarYear] = useState(today.getFullYear());
@@ -783,131 +812,145 @@ function SessionListScreen({ navigation, route }: any) {
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#f6f6f6" }}>
-      <View style={{ paddingHorizontal: 16, paddingTop: 12, alignItems: "center" }}>
-        <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
-          Filtrar por tipo
-        </Text>
-        <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap", marginBottom: 8 }}>
-          {(allTypes.length ? allTypes : ["strength", "rest", "stamina", "gymnastic"]).map((t) => {
-            const active = selectedTypes.includes(t);
-            return (
-              <TouchableOpacity
-                key={t}
-                onPress={() => {
-                  setSelectedTypes((prev) =>
-                    prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
-                  );
-                }}
-                style={{
-                  paddingHorizontal: 10,
-                  paddingVertical: 6,
-                  borderRadius: 999,
-                  margin: 4,
-                  backgroundColor: active ? "#2563eb" : "#e2e8f0",
-                }}
-              >
-                <Text style={{ color: active ? "#fff" : "#0f172a", fontWeight: "600" }}>
-                  {formatTypeLabel(t)}
-                </Text>
-              </TouchableOpacity>
-            );
-          })}
-        </View>
-        <View style={{ flexDirection: "row", gap: 8, marginBottom: 8 }}>
-          <TouchableOpacity
-            onPress={() => setSelectedTypes([])}
-            style={{
-              backgroundColor: "#e2e8f0",
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 8,
-            }}
-          >
-            <Text style={{ color: "#0f172a", fontWeight: "600" }}>Reset tipos</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            onPress={() => setShowCalendar((prev) => !prev)}
-            style={{
-              backgroundColor: "#0f172a",
-              paddingHorizontal: 12,
-              paddingVertical: 6,
-              borderRadius: 8,
-            }}
-          >
-            <Text style={{ color: "#fff", fontWeight: "600" }}>
-              {showCalendar ? "Ocultar calendario" : "Mostrar calendario"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-        <View style={{ marginBottom: 10, width: "100%", alignItems: "center" }}>
-          <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
-            Mes / Año
-          </Text>
-          <MonthYearSelect
-            value={selectedMonthKey}
-            options={monthOptions}
-            onChange={(next) => {
-              setSelectedMonthKey(next);
-              setFilteredDate("");
-              if (next !== "all" && next !== "Fecha desconocida") {
-                const [y, m] = next.split("-");
-                const yNum = Number(y);
-                const mNum = Number(m);
-                if (Number.isFinite(yNum) && Number.isFinite(mNum)) {
-                  setCalendarYear(yNum);
-                  setCalendarMonth(Math.max(0, mNum - 1));
-                }
-              }
-            }}
-          />
-        </View>
-        <Text style={{ fontSize: 14, color: "#333", marginBottom: 6, textAlign: "center" }}>
-          Calendario
-        </Text>
-        {showCalendar && (
-          <CalendarPicker
-            year={calendarYear}
-            monthIndex={calendarMonth}
-            datesWithSessions={highlightDates}
-            selectedDate={filteredDate}
-            onSelectDate={(date) => {
-              setFilteredDate(date);
-              setJumpDate(date);
-            }}
-            onChangeMonth={(delta) => {
-              const next = new Date(calendarYear, calendarMonth + delta, 1);
-              setCalendarYear(next.getFullYear());
-              setCalendarMonth(next.getMonth());
-            }}
-            size="compact"
-          />
-        )}
-        <View style={{ flexDirection: "row", marginBottom: 12, width: "100%", justifyContent: "center" }}>
-          <TouchableOpacity
-            onPress={() => {
-              setFilteredDate("");
-              setJumpDate("");
-            }}
-            style={{
-              backgroundColor: "#eee",
-              paddingHorizontal: 12,
-              borderRadius: 8,
-              justifyContent: "center",
-            }}
-          >
-            <Text style={{ color: "#333", fontWeight: "600" }}>Ver todo</Text>
-          </TouchableOpacity>
-        </View>
-        {filteredDate && (
-          <Text style={{ color: "#666", marginBottom: 8, textAlign: "center" }}>
-            Mostrando sesiones del {filteredDate}
-          </Text>
-        )}
-      </View>
       <FlatList
         data={rows}
         keyExtractor={(item) => item.key}
-        contentContainerStyle={{ padding: 16 }}
+        contentContainerStyle={{ padding: 16, paddingTop: 10 }}
+        ListHeaderComponent={
+          <View style={{ alignItems: "center", marginBottom: 10 }}>
+            <View style={{ flexDirection: "row", gap: 8, flexWrap: "wrap", justifyContent: "center" }}>
+              <TouchableOpacity
+                onPress={() => setShowFilters((prev) => !prev)}
+                style={{
+                  backgroundColor: "#0f172a",
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                }}
+              >
+                <Text style={{ color: "#fff", fontWeight: "700" }}>
+                  {showFilters ? "Ocultar filtros" : "Mostrar filtros"}
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setFilteredDate("");
+                  setJumpDate("");
+                }}
+                style={{
+                  backgroundColor: "#eee",
+                  paddingHorizontal: 12,
+                  paddingVertical: 6,
+                  borderRadius: 999,
+                  justifyContent: "center",
+                }}
+              >
+                <Text style={{ color: "#333", fontWeight: "600" }}>Ver todo</Text>
+              </TouchableOpacity>
+            </View>
+
+            {showFilters && (
+              <View style={{ marginTop: 8, alignItems: "center" }}>
+                <Text style={{ fontSize: 12, color: "#333", marginBottom: 4, textAlign: "center" }}>
+                  Filtrar por tipo
+                </Text>
+                <View style={{ flexDirection: "row", justifyContent: "center", flexWrap: "wrap", marginBottom: 6 }}>
+                  {(allTypes.length ? allTypes : ["strength", "rest", "stamina", "gymnastic"]).map((t) => {
+                    const active = selectedTypes.includes(t);
+                    return (
+                      <TouchableOpacity
+                        key={t}
+                        onPress={() => {
+                          setSelectedTypes((prev) =>
+                            prev.includes(t) ? prev.filter((x) => x !== t) : [...prev, t]
+                          );
+                        }}
+                        style={{
+                          paddingHorizontal: 8,
+                          paddingVertical: 4,
+                          borderRadius: 999,
+                          margin: 3,
+                          backgroundColor: active ? "#2563eb" : "#e2e8f0",
+                        }}
+                      >
+                        <Text style={{ color: active ? "#fff" : "#0f172a", fontWeight: "600" }}>
+                          {formatTypeLabel(t)}
+                        </Text>
+                      </TouchableOpacity>
+                    );
+                  })}
+                </View>
+                <View style={{ flexDirection: "row", gap: 8, marginBottom: 6, flexWrap: "wrap", justifyContent: "center" }}>
+                  <MonthYearSelect
+                    value={selectedMonthKey}
+                    options={monthOptions}
+                    onChange={(next) => {
+                      setSelectedMonthKey(next);
+                      setFilteredDate("");
+                      if (next !== "all" && next !== "Fecha desconocida") {
+                        const [y, m] = next.split("-");
+                        const yNum = Number(y);
+                        const mNum = Number(m);
+                        if (Number.isFinite(yNum) && Number.isFinite(mNum)) {
+                          setCalendarYear(yNum);
+                          setCalendarMonth(Math.max(0, mNum - 1));
+                        }
+                      }
+                    }}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setSelectedTypes([])}
+                    style={{
+                      backgroundColor: "#e2e8f0",
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text style={{ color: "#0f172a", fontWeight: "600" }}>Reset tipos</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setShowCalendar((prev) => !prev)}
+                    style={{
+                      backgroundColor: "#0f172a",
+                      paddingHorizontal: 12,
+                      paddingVertical: 6,
+                      borderRadius: 8,
+                    }}
+                  >
+                    <Text style={{ color: "#fff", fontWeight: "600" }}>
+                      {showCalendar ? "Ocultar calendario" : "Mostrar calendario"}
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                {showCalendar && (
+                  <CalendarPicker
+                    year={calendarYear}
+                    monthIndex={calendarMonth}
+                    datesWithSessions={highlightDates}
+                    selectedDate={filteredDate}
+                    onSelectDate={(date) => {
+                      setFilteredDate(date);
+                      setJumpDate(date);
+                    }}
+                    onChangeMonth={(delta) => {
+                      const next = new Date(calendarYear, calendarMonth + delta, 1);
+                      setCalendarYear(next.getFullYear());
+                      setCalendarMonth(next.getMonth());
+                    }}
+                    size="compact"
+                  />
+                )}
+              </View>
+            )}
+
+            {filteredDate && (
+              <Text style={{ color: "#666", marginTop: 6, textAlign: "center" }}>
+                Mostrando sesiones del {filteredDate}
+              </Text>
+            )}
+          </View>
+        }
         renderItem={({ item }) => {
           if (item.type === "month") {
             return (
@@ -1251,6 +1294,7 @@ function SessionDetailScreen({ route }: any) {
   const sessionFlow = programDay.session_flow as any;
   const variants = sessionFlow?.variants || [];
   const sharedBlocks = sessionFlow?.shared_blocks || [];
+  const generalWarmupText = extractText(sessionFlow?.general_warmup);
 
   const sortedDays = [...programDays].sort((a, b) => {
     const aDate = a.date || "";
@@ -1307,7 +1351,16 @@ function SessionDetailScreen({ route }: any) {
         Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
       </Text>
 
+<<<<<<< HEAD
       {sessionFlow?.general_warmup && <WarmupCard warmup={sessionFlow.general_warmup} />}
+=======
+      {generalWarmupText && (
+        <View style={{ marginTop: 16 }}>
+          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
+          {renderMultiline(generalWarmupText)}
+        </View>
+      )}
+>>>>>>> 03408b6d780ec359d5220f84b813e1ed7f20ad0b
 
       {variants.map((variant: any, idx: number) => (
         <View key={`variant-${idx}`} style={{ marginTop: 16 }}>
@@ -1317,7 +1370,16 @@ function SessionDetailScreen({ route }: any) {
           {variant?.title && (
             <Text style={{ marginTop: 4, textAlign: "center", color: "#444" }}>{variant.title}</Text>
           )}
+<<<<<<< HEAD
           {variant?.warmup && <WarmupCard warmup={variant.warmup} />}
+=======
+          {variant?.warmup && (() => {
+            const variantWarmupText = extractText(variant.warmup);
+            if (!variantWarmupText) return null;
+            if (generalWarmupText && variantWarmupText === generalWarmupText) return null;
+            return renderMultiline(variantWarmupText);
+          })()}
+>>>>>>> 03408b6d780ec359d5220f84b813e1ed7f20ad0b
           {(variant?.blocks || []).map((block: any, bIdx: number) => (
             <View
               key={`variant-${idx}-block-${bIdx}`}

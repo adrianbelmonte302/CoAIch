@@ -1,6 +1,6 @@
 [
   {
-    "schema_version": "2.0.0",
+    "schema_version": "2.1.0",
     "entity_type": "program_day",
     "day_id": "2025-08-01",
     "date": "2025-08-01",
