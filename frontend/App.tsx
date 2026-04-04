@@ -293,6 +293,74 @@ function renderTextBlock(value?: any) {
   return renderMultiline(text);
 }
 
+function normalizeValueToLines(value?: any): string[] {
+  if (value === null || value === undefined) return [];
+  if (typeof value === "string") {
+    return value
+      .split("\n")
+      .map((line) => line.trim())
+      .filter(Boolean);
+  }
+  if (Array.isArray(value)) {
+    return value.map((entry) => String(entry)).filter(Boolean);
+  }
+  if (typeof value === "object") {
+    try {
+      return [JSON.stringify(value)];
+    } catch {
+      return [String(value)];
+    }
+  }
+  return [String(value)];
+}
+
+function WarmupCard({ warmup }: { warmup: any }) {
+  if (!warmup) return null;
+  const sections: Array<{ label: string; lines: string[] }> = [
+    { label: "Quote", lines: normalizeValueToLines(warmup.quote) },
+    { label: "Mobility", lines: normalizeValueToLines(warmup.mobility) },
+    { label: "Activation", lines: normalizeValueToLines(warmup.activation) },
+    { label: "Warm-up", lines: normalizeValueToLines(warmup.raw_text) },
+    { label: "Notas", lines: normalizeValueToLines(warmup.literal_day_text) },
+  ].filter((section) => section.lines.length > 0);
+
+  if (!sections.length) return null;
+
+  return (
+    <View
+      style={{
+        marginTop: 16,
+        backgroundColor: "white",
+        padding: 16,
+        borderRadius: 12,
+        shadowColor: "#000",
+        shadowOpacity: 0.05,
+        shadowRadius: 6,
+        elevation: 2,
+      }}
+    >
+      <Text style={{ fontSize: 16, fontWeight: "700", textAlign: "center", marginBottom: 8 }}>
+        Warm-up
+      </Text>
+      {sections.map((section) => (
+        <View key={section.label} style={{ marginTop: 8 }}>
+          <Text style={{ fontSize: 12, fontWeight: "700", color: "#2563eb", textAlign: "center" }}>
+            {section.label.toUpperCase()}
+          </Text>
+          {section.lines.map((line, idx) => (
+            <Text
+              key={`${section.label}-${idx}`}
+              style={{ marginTop: idx ? 4 : 6, textAlign: "center", color: "#1f2937" }}
+            >
+              {line}
+            </Text>
+          ))}
+        </View>
+      ))}
+    </View>
+  );
+}
+
 function formatLoad(load?: any): string {
   if (!load) return "";
   const parts: string[] = [];
@@ -1239,12 +1307,7 @@ function SessionDetailScreen({ route }: any) {
         Duración estimada: {formatDuration(programDay.session_context?.estimated_duration_min)} min
       </Text>
 
-      {sessionFlow?.general_warmup && (
-        <View style={{ marginTop: 16 }}>
-          <Text style={{ fontSize: 16, fontWeight: "600", textAlign: "center" }}>Warm-up</Text>
-          {renderTextBlock(sessionFlow.general_warmup)}
-        </View>
-      )}
+      {sessionFlow?.general_warmup && <WarmupCard warmup={sessionFlow.general_warmup} />}
 
       {variants.map((variant: any, idx: number) => (
         <View key={`variant-${idx}`} style={{ marginTop: 16 }}>
@@ -1254,7 +1317,7 @@ function SessionDetailScreen({ route }: any) {
           {variant?.title && (
             <Text style={{ marginTop: 4, textAlign: "center", color: "#444" }}>{variant.title}</Text>
           )}
-          {variant?.warmup && renderTextBlock(variant.warmup)}
+          {variant?.warmup && <WarmupCard warmup={variant.warmup} />}
           {(variant?.blocks || []).map((block: any, bIdx: number) => (
             <View
               key={`variant-${idx}-block-${bIdx}`}
