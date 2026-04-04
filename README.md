@@ -258,6 +258,13 @@ python scripts/export_program_days.py --out-dir exports
 ```
 Genera archivos `workouts_<MES>_<AÑO>.json` dentro de `backend/exports/`.
 
+**Validar JSON antes de importar**
+```
+cd ~/CoAIch/backend
+python scripts/validate_program_days_json.py /ruta/archivo.json
+```
+Informa errores de schema, campos críticos faltantes y días sin entreno.
+
 **Chequeo completo del sistema (servicios + API + web)**
 ```
 cd ~/CoAIch
