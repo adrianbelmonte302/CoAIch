@@ -105,18 +105,18 @@ class VariantSchema(StrictBase):
     title: Optional[str] = None
     modality: Optional[str] = None
     selection_rule: Optional[str] = None
-    warmup: Optional[dict] = None
+    warmup: Optional[dict | str] = None
     blocks: List[BlockSchema] = []
-    cooldown: Optional[dict] = None
+    cooldown: Optional[dict | str] = None
     notes_literal: Optional[str] = None
 
 
 class SessionFlowSchema(StrictBase):
-    general_warmup: Optional[dict] = None
+    general_warmup: Optional[dict | str] = None
     variants: List[VariantSchema] = []
     shared_blocks: List[BlockSchema] = []
-    cooldown: Optional[dict] = None
-    mobility_flow: Optional[dict] = None
+    cooldown: Optional[dict | str] = None
+    mobility_flow: Optional[dict | str] = None
 
 
 class ClassificationSchema(StrictBase):

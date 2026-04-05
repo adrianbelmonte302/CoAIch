@@ -1,0 +1,154 @@
+[
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-01",
+    "date": "2025-02-01",
+    "weekday": "Saturday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-02",
+    "date": "2025-02-01",
+    "weekday": "Sunday",
+    "display_title": null,
+    "is_rest_day": true,
+    "day_type": "rest",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": null
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  }
+]

@@ -1,0 +1,2650 @@
+[
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-01",
+    "date": "2025-02-01",
+    "weekday": "Saturday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-02",
+    "date": "2025-02-02",
+    "weekday": "Sunday",
+    "display_title": null,
+    "is_rest_day": true,
+    "day_type": "rest",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": null
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-03",
+    "date": "2025-02-03",
+    "weekday": "Monday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-04",
+    "date": "2025-02-04",
+    "weekday": "Tuesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-05",
+    "date": "2025-02-05",
+    "weekday": "Wednesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-06",
+    "date": "2025-02-06",
+    "weekday": "Thursday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-07",
+    "date": "2025-02-07",
+    "weekday": "Friday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-08",
+    "date": "2025-02-08",
+    "weekday": "Saturday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-09",
+    "date": "2025-02-09",
+    "weekday": "Sunday",
+    "display_title": null,
+    "is_rest_day": true,
+    "day_type": "rest",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": null
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-10",
+    "date": "2025-02-10",
+    "weekday": "Monday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-11",
+    "date": "2025-02-11",
+    "weekday": "Tuesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-12",
+    "date": "2025-02-12",
+    "weekday": "Wednesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-13",
+    "date": "2025-02-13",
+    "weekday": "Thursday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-14",
+    "date": "2025-02-14",
+    "weekday": "Friday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-15",
+    "date": "2025-02-15",
+    "weekday": "Saturday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-16",
+    "date": "2025-02-16",
+    "weekday": "Sunday",
+    "display_title": null,
+    "is_rest_day": true,
+    "day_type": "rest",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": null
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-17",
+    "date": "2025-02-17",
+    "weekday": "Monday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-18",
+    "date": "2025-02-18",
+    "weekday": "Tuesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-19",
+    "date": "2025-02-19",
+    "weekday": "Wednesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-20",
+    "date": "2025-02-20",
+    "weekday": "Thursday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-21",
+    "date": "2025-02-21",
+    "weekday": "Friday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-22",
+    "date": "2025-02-22",
+    "weekday": "Saturday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-23",
+    "date": "2025-02-23",
+    "weekday": "Sunday",
+    "display_title": null,
+    "is_rest_day": true,
+    "day_type": "rest",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": null
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-24",
+    "date": "2025-02-24",
+    "weekday": "Monday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-25",
+    "date": "2025-02-25",
+    "weekday": "Tuesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-26",
+    "date": "2025-02-26",
+    "weekday": "Wednesday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-27",
+    "date": "2025-02-27",
+    "weekday": "Thursday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  },
+  {
+    "schema_version": "2.1.0",
+    "entity_type": "program_day",
+    "day_id": "2025-02-28",
+    "date": "2025-02-28",
+    "weekday": "Friday",
+    "display_title": "Training Day",
+    "is_rest_day": false,
+    "day_type": "training",
+    "deload_week": false,
+    "program_source": "truecoach",
+    "athlete_ref": "adrian_belmonte",
+    "classification": {
+      "session_archetype": null,
+      "primary_modalities": [],
+      "movement_patterns": [],
+      "energy_systems": []
+    },
+    "related_workout_ids": [],
+    "related_competition_ids": [],
+    "source_integrity": {
+      "data_complete": true,
+      "parser_confidence": "high",
+      "missing_sections": [],
+      "detection_subject": "[TrueCoach] Workout",
+      "source_type": "gmail"
+    },
+    "raw_content": {
+      "quote": null,
+      "literal_day_text": "Workout details"
+    },
+    "session_context": {
+      "tags": [],
+      "estimated_duration_min": null,
+      "priority": null,
+      "intended_stimulus": [],
+      "recording_requests": []
+    },
+    "session_flow": {
+      "general_warmup": null,
+      "variants": [
+        {
+          "variant_id": "A",
+          "title": "Main",
+          "modality": null,
+          "selection_rule": null,
+          "warmup": null,
+          "blocks": [
+            {
+              "block_id": "A",
+              "title": "Block A",
+              "block_type": "strength",
+              "sequence_order": 1,
+              "focus": [],
+              "prescription": {
+                "format": null,
+                "time_cap_min": null,
+                "duration_min": null,
+                "rest_between_subblocks_sec": null,
+                "sub_blocks": [
+                  {
+                    "sub_block_id": "A1",
+                    "title": "Sub A1",
+                    "format": null,
+                    "duration_min": null,
+                    "time_cap_min": null,
+                    "rest_sec": null,
+                    "description": "Simple workout",
+                    "exercises": []
+                  }
+                ]
+              },
+              "standards": [],
+              "targets": [],
+              "alternatives": [],
+              "coach_notes_literal": null,
+              "coach_notes_structured": {
+                "stimulus": [],
+                "strategy": [],
+                "pacing": [],
+                "breathing": [],
+                "technical_cues": [],
+                "common_errors": [],
+                "recovery_guidance": [],
+                "what_to_record": [],
+                "purpose": []
+              }
+            }
+          ],
+          "cooldown": null,
+          "notes_literal": null
+        }
+      ],
+      "shared_blocks": [],
+      "cooldown": null,
+      "mobility_flow": null
+    },
+    "execution_log": null,
+    "athlete_feedback": null,
+    "derived_metrics": null,
+    "ai_annotations": null
+  }
+]

@@ -264,6 +264,10 @@ cd ~/CoAIch/backend
 python scripts/validate_program_days_json.py /ruta/archivo.json
 ```
 Informa errores de schema, campos críticos faltantes y días sin entreno.
+Opciones:
+- `--strict`: convierte algunos warnings en errores.
+- `--json-report`: salida JSON.
+Exit codes: 0=PASS, 1=PASS WITH WARNINGS, 2=FAIL.
 
 **Chequeo completo del sistema (servicios + API + web)**
 ```
